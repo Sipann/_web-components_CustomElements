@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="responsive-navbar.js"></script>
+  <style>
+    
+  </style>
+</head>
+<body>
+  <responsive-navbar>
+    <a slot="logo-home" href="/">
+      <img src="./logo.svg" alt="logo" />
+    </a>
+    <fragment slot="navigation">
+      <li><a href="#">Item 1</a></li>
+      <li><a href="#">Item 2</a></li>
+      <li><a href="#">Item 3</a></li>
+      <li><a href="#">Item 4</a></li>
+      <li><a href="#">Item 5</a></li>
+    </fragment>
+  </responsive-navbar>
+
+  <!-- <button>Remove Responsive Navbar</button> -->
+
+  <script>
+    // Script used to check removal of event listeners:
+    
+    // let rn = document.querySelector('responsive-navbar')
+    // let buttonRemove = document.querySelector('button')
+    // buttonRemove.addEventListener('click', () => {
+    //   rn.parentElement.removeChild(rn)
+    // })
+  </script>
+</body>
+</html>
