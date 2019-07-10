@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="card.js"></script>
+  <script src="card-flip.js"></script>
+  
+  <style>
+    card-basic {
+      width: 200px;
+      height: 200px;
+    }
+  </style>
+</head>
+<body>
+  <card-flip flip-dur="1s">
+    <card-basic slot="front" bg-color="salmon">Front</card-basic>
+    <card-basic slot="back" bg-color="orangered">Back</card-basic>
+  </card-flip>
+
+  <!-- <button>Remove Card flip container</button> -->
+
+  <script>
+    // Script used to check removal of event listeners:
+    
+    // let cc = document.querySelector('card-flip')
+    // let buttonRemove = document.querySelector('button')
+    // buttonRemove.addEventListener('click', () => {
+    //   cc.parentElement.removeChild(cc)
+    // })
+  </script>
+</body>
+</html>
