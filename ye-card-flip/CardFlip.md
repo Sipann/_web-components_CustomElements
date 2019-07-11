@@ -32,4 +32,3 @@ ___
 ## CSS
 
 * No CSS set from outside for this component (width & height resolved from its children)
-
