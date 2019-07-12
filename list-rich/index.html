@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="list-item.js"></script>
+  <script src="list-rich.js"></script>
+  <style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    height: 600px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  list-rich {
+    width: 300px;
+  }
+  </style>
+</head>
+<body>
+
+  <list-rich anim-dur=500></list-rich>
+
+  <!-- <button id="remove">Remove Component</button> -->
+
+  <script>
+  let comp = document.querySelector('list-rich')
+  let todos = [1, 2, 3]
+  comp._setTodos(todos)
+
+  // let buttonRemove = document.querySelector('button#remove')
+  // buttonRemove.addEventListener('click', () => {
+  //   comp.parentElement.removeChild(comp)
+  // })
+
+  </script>
+</body>
+</html>
