@@ -8,7 +8,7 @@ ___
 
 html
 ```html
-<list-dynamic anim-dur=500 icon="icon-close" identical=true></list-dynamic>
+<list-dynamic anim-dur=500 icon="icon-bin" identical=true></list-dynamic>
 ```
 
 
