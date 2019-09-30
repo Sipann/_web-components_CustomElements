@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  
+  <script src="icon-bin.js"></script>
+  <script src="list-item.js"></script>
+  <script src="list-dynamic.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    list-dynamic {
+      width: 300px;
+    }
+
+  </style>
+  <title>Document</title>
+</head>
+<body>
+  <list-dynamic anim-dur=500 icon="icon-bin"  >
+    <!-- <input slot="input" placeholder="New Todo" />  -->
+    <!-- <span slot="add">Go</span> -->
+  </list-dynamic>
+</body>
+
+<script>
+
+  let list = document.querySelector('list-dynamic');
+  let items = [ 'test1', 'test2' ];
+  list.items = items;
+
+</script>
+</html>
