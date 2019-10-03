@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>icon rating Linear Gradient w/ Material Icons && Font Awesome</title>
+  
+  <script src="icon-star.js"></script>
+  <script src="icon-rating-lg.js"></script>
+
+  <style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  icon-rating-lg {
+    width: 500px;
+    position: relative;
+  }
+
+  .rating-container {
+    width: 600px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  </style>
+</head>
+<body>
+
+
+  <h3>Icon Rating Linear Gradient</h3>
+  <icon-rating-lg 
+    max=5 
+    rating=3.4 
+    color1="blue"
+    color2="pink"
+    color3="deeppink"
+    rounding="half-ceil" 
+    icon-name="icon-star" 
+    box-width=100 
+    box-height=100 ></icon-rating-lg>
+
+    <icon-rating-lg 
+    max=5 
+    rating=2.7 
+    color1="blue"
+    color2="pink"
+    color3="deeppink"
+    icon-name="icon-star" 
+    box-width="100" 
+    box-height="100" ></icon-rating-lg>
+
+    <div class="rating-container">
+      <icon-rating-lg icon-name="icon-star"></icon-rating-lg>
+      <h2>2.7</h2>
+    </div>
+  
+
+</body>
+</html>
