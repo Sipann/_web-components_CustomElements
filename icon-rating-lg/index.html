@@ -7,7 +7,8 @@
   <title>icon rating Linear Gradient w/ Material Icons && Font Awesome</title>
   
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <script src="icon-rating-lg-mi.js"></script>
+  <link href="https://use.fontawesome.com/releases/v5.0.8/css/all.css" rel="stylesheet">
+  <script src="icon-rating-icons.js"></script>
 
   <style>
   * {
@@ -16,18 +17,72 @@
     box-sizing: border-box;
   }
 
-  icon-rating-lg-mi {
+  section {
+    margin: 2rem;
+    font-family: sans-serif;
+  }
+
+  h4 {
+    margin-top: 1rem;
+  }
+
+  .rating-container {
+    width: 550px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  icon-rating-mi {
     font-family: "Material Icons";
+    --icon-size: 4rem;
+    --frame-color: green;
+  }
+
+  icon-rating-fa {
+    font-family: "Font Awesome 5 Free";
+    --icon-size: 3rem;
+    --letter-spacing: 1rem;
   }
 
   </style>
 </head>
 <body>
 
-  <h3>Icon Rating Linear Gradient Material Icons</h3>
-  <icon-rating-lg-mi max=5 rating=3.4 icon-name="favorite" rounding="full" color1="blue"></icon-rating-lg-mi>
+  <section>
+    <h3>Icon Rating Linear Gradient "Material Icons" Icons</h3>
+    <h4>Rounding: full - MonoChrome</h4>
+    <div class="rating-container">
+      <icon-rating-mi max=5 rating=3.4 icon-name="favorite" rounding="full" color1="blue"></icon-rating-mi>
+      <h2>3.4 / 5</h2>
+    </div>
+    
+    <h4>Rounding: half-ceil - LinearGradient</h4>
+    <div class="rating-container">
+      <icon-rating-mi max=5 rating=3.4 icon-name="favorite" rounding="half-ceil" color1="red" color2="green"></icon-rating-mi>
+      <h2>3.4 / 5</h2>
+    </div>
+  </section>
+  
+  <br>
 
-  <icon-rating-lg-mi max=5 rating=3.4 icon-name="favorite" rounding="half-ceil" color1="red" color2="green"></icon-rating-lg-mi>
+  <section>
+    <h3>Icon Rating Linear Gradient Using "Font Awesome" Icons</h3>
+    <h4>Rounding: full - MonoChrome</h4>
+    <div class="rating-container">
+      <icon-rating-fa max=5 rating=3.1 icon-name="fas fa-heart" rounding="full" color1="blue"></icon-rating-fa>
+      <h2>3.1 / 5</h2>
+    </div>
+    
+    <h4>Rounding: half-ceil - LinearGradient</h4>
+    <div class="rating-container">
+      <icon-rating-fa max=6 rating=4.7 icon-name="fas fa-heart" rounding="half-ceil" color1="red" color2="green"></icon-rating-fa>
+      <h2>3.1 / 6</h2>
+    </div>
+  </section>
+  
 
 </body>
 </html>
