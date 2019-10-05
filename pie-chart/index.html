@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="./svg-pie-chart.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    #app {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    pie-chart {
+      width: 400px;
+      position: relative;
+      --hover-bg: blue;
+   }
+  </style>
+</head>
+<body>
+
+  <div id="app">
+    <pie-chart
+    donut-radius="0"></pie-chart>
+  </div>
+  
+  
+  <script>
+  let pieChart = document.querySelector('pie-chart');
+  let values = [
+    { 'item0' : 75 },
+    { 'item1' : 20 },
+    { 'item2' : 10 },
+    { 'item3' : 10 },
+    { 'item4' : 10 },
+    { 'item5' : 15 },
+  ];
+  pieChart.values = values;
+  </script>
+</body>
+</html>
