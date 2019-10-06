@@ -26,7 +26,7 @@ pieChartStyle.innerHTML = `
 
 #arcs path:hover,
 #arcs path.revealed {
-  fill: var(--hover-bg);
+  fill: var(--hover-bg, green);
 }
 
 .container {
@@ -41,16 +41,16 @@ svg {
 
 svg text {
   stroke: none;
-  fill: blue;
-  font-size: .4rem;
+  fill: var(--text-color, #333);
+  font-size: var(--text-size, .4rem);
 }
 
 ul {
   list-style: none;
-  width: 120px;
-  border: 2px solid black;
-  border-radius: 10px;
-  padding: 1rem;
+  width: var(--width-label, 120px);
+  border: var(--border-label, 2px solid #333);
+  border-radius: var(--border-label-radius, 10px);
+  padding: var(--border-label-padding, 1rem);
 }
 
 li {
@@ -61,7 +61,7 @@ li {
 
 li:hover span,
 li.revealed span {
-  color: yellow;
+  color: var(--hover-label, deeppink);
 }
 
 li span {
@@ -80,20 +80,20 @@ class PieChart extends HTMLElement {
     this._root.appendChild(pieChartStyle);
 
     // DOM elements
-    this._svgContainer = this._root.querySelector('svg');
     this._arcsContainer = this._root.querySelector('#arcs');
-    this._labelsContainer = this._root.querySelector('#labels ul');
     this._info= this._root.querySelector('#info');
+    this._labelsContainer = this._root.querySelector('#labels ul');
+    this._svgContainer = this._root.querySelector('svg');
 
     // data 
+    this._animDuration = 0;
+    this._animation = null;
+    this._circleLength = 2 * Math.PI * 25;
     this._labels = [];
-    this._values = [];
+    this._labelsRendered = false;
     this._pieColors = [];
     this._size = 0;
-    this._circleLength = 2 * Math.PI * 25;
-    this._animation = null;
-    this._animDuration = 0;
-    this._labelsRendered = false;
+    this._values = [];
   }
 
   connectedCallback() {
