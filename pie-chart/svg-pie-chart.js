@@ -18,11 +18,9 @@ pieChartStyle.innerHTML = `
 :host {
   display: inline-block;
   width: 100%;
-  
 }
 
 #arcs path {
-  
   transition: all 0.4s;
 }
 
@@ -47,7 +45,6 @@ svg text {
   font-size: .4rem;
 }
 
-
 ul {
   list-style: none;
   width: 120px;
@@ -56,15 +53,15 @@ ul {
   padding: 1rem;
 }
 
-li:hover span,
-li.revealed span {
-  color: yellow;
-}
-
 li {
   display: flex;
   justify-content: space-around;
   align-items: center;
+}
+
+li:hover span,
+li.revealed span {
+  color: yellow;
 }
 
 li span {
@@ -91,7 +88,7 @@ class PieChart extends HTMLElement {
     // data 
     this._labels = [];
     this._values = [];
-    this._valuesColor = ['#bca18d', '#f2746b', '#f14d49', 'green', 'grey', 'yellow'];
+    this._pieColors = [];
     this._size = 0;
     this._circleLength = 2 * Math.PI * 25;
     this._animation = null;
@@ -191,16 +188,17 @@ class PieChart extends HTMLElement {
   }
 
   _animate() {
-    // console.log('this._values', this._values);
+    console.log('this._values', this._values);
+    console.log('this._pieColors', this._pieColors);
     let accumulatedAngle = -90;
     let accumulatedValue = 0;
     
     this._values.forEach((value, index) => {
     
         let newCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        let targetIndex = index % this._valuesColor.length;
+        let targetIndex = index % this._pieColors.length;
         newCircle.classList.add('animated');
-        newCircle.setAttribute('stroke', this._valuesColor[targetIndex]);
+        newCircle.setAttribute('stroke', this._pieColors[targetIndex]);
         newCircle.setAttribute('stroke-width', 0);
         newCircle.setAttribute('cx', 50);
         newCircle.setAttribute('cy', 50);
@@ -255,6 +253,7 @@ class PieChart extends HTMLElement {
   
   _render() {
     console.log('this._values', this._values);
+    console.log('this._pieColors', this._pieColors);
 
     let animationCircles = document.querySelectorAll('.animated');
     animationCircles.forEach(circle => {
@@ -264,8 +263,8 @@ class PieChart extends HTMLElement {
     let accumulatedAngle = 0;
     this._values.forEach((value, index) => {
       let newArc = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      let targetIndex = index % this._valuesColor.length;
-      newArc.setAttribute('fill', this._valuesColor[targetIndex]);
+      let targetIndex = index % this._pieColors.length;
+      newArc.setAttribute('fill', this._pieColors[targetIndex]);
       let newArcPath = this._describeArc(accumulatedAngle, value.angle + accumulatedAngle);
       
          
@@ -301,7 +300,7 @@ class PieChart extends HTMLElement {
     let colorRef = document.createElement('div');
     colorRef.style.width = '15px';
     colorRef.style.height = '15px';
-    colorRef.style.background = this._valuesColor[index];
+    colorRef.style.background = this._pieColors[index];
     colorRef.style.display = 'inline-block';
     let textRef = document.createElement('span');
     textRef.innerText = value.label;
@@ -341,12 +340,8 @@ class PieChart extends HTMLElement {
     
   }
 
-  get valuesColor() {
-    return this._valuesColor;
-  }
-
-  set valuesColor(value) {
-    this._valuesColor = value;
+  set pieColors(value) {
+    this._pieColors = value;
   }
 
 }
