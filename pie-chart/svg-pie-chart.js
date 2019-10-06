@@ -32,6 +32,9 @@ pieChartStyle.innerHTML = `
 .container {
   width: 100%;
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 svg {
@@ -47,6 +50,7 @@ svg text {
 
 ul {
   list-style: none;
+  margin: 1rem;
   width: var(--width-label, 120px);
   border: var(--border-label, 2px solid #333);
   border-radius: var(--border-label-radius, 10px);
@@ -54,7 +58,8 @@ ul {
 }
 
 li {
-  display: flex;
+  display: var(--display-list-item, flex);
+  margin-right: var(--margin-list-item, 0);
   justify-content: space-around;
   align-items: center;
 }
@@ -80,6 +85,7 @@ class PieChart extends HTMLElement {
     this._root.appendChild(pieChartStyle);
 
     // DOM elements
+    this._componentContainer = this._root.querySelector('.container');
     this._arcsContainer = this._root.querySelector('#arcs');
     this._info= this._root.querySelector('#info');
     this._labelsContainer = this._root.querySelector('#labels ul');
@@ -89,24 +95,44 @@ class PieChart extends HTMLElement {
     this._animDuration = 0;
     this._animation = null;
     this._circleLength = 2 * Math.PI * 25;
-    this._labels = [];
+    this._labels = 'none';
     this._labelsRendered = false;
     this._pieColors = [];
     this._size = 0;
     this._values = [];
+    this._labelIsValid = false;
   }
 
   connectedCallback() {
     
+    let size = parseInt(window.getComputedStyle(this).width);
+    console.log('size', size);
+
     this._animation = this.getAttribute('animation') || null;
     this._animDuration = parseInt(this.getAttribute('anim-duration')) || 0;
 
     this._svgContainer.addEventListener('click', e => this._displayInfo(e), false );
-    this._svgContainer.addEventListener('mouseover', e => this._revealLabel(e), false);
-    this._svgContainer.addEventListener('mouseleave', () => this._resetLabels(), false);
 
-    this._labelsContainer.addEventListener('mouseover', e => this._revealSector(e), false);
-    this._labelsContainer.addEventListener('mouseleave', () => this._resetSectors(), false)
+    this._labels = this.getAttribute('labels') || 'none';
+    this._labelIsValid = this._labels === 'bottom' || this._labels === 'top' || this._labels === 'left' || this._labels === 'right';
+
+    if (this._labelIsValid) {
+      if (this._labels === 'bottom' || this._labels === 'top') {
+        this._componentContainer.style.flexDirection = 'column';
+        this._labelsContainer.style.width = `${0.8 * size}px`;
+        this._root.host.style.setProperty('--display-list-item', 'inline-flex');
+        this._root.host.style.setProperty('--margin-list-item', '.8rem');
+      } 
+      if (this._labels === 'left' || this._labels === 'top') {
+        this._root.querySelector('#labels').style.order = -1;
+      }
+      this._labelsContainer.addEventListener('mouseover', e => this._revealSector(e), false);
+      this._labelsContainer.addEventListener('mouseleave', () => this._resetSectors(), false);
+      this._svgContainer.addEventListener('mouseover', e => this._revealLabel(e), false);
+      this._svgContainer.addEventListener('mouseleave', () => this._resetLabels(), false);
+
+    }
+
   }
 
   static get observedAttributes() {
@@ -189,7 +215,6 @@ class PieChart extends HTMLElement {
 
   _animate() {
     console.log('this._values', this._values);
-    console.log('this._pieColors', this._pieColors);
     let accumulatedAngle = -90;
     let accumulatedValue = 0;
     
@@ -238,11 +263,10 @@ class PieChart extends HTMLElement {
           duration: duration,
           fill: 'forwards'
         })
-  
-        this._renderLabels(value, targetIndex);
-        this._labelsRendered = true;
-
+       
     });
+
+    this._renderLabels();
 
     setTimeout(() => {
       this._render();
@@ -253,7 +277,6 @@ class PieChart extends HTMLElement {
   
   _render() {
     console.log('this._values', this._values);
-    console.log('this._pieColors', this._pieColors);
 
     let animationCircles = document.querySelectorAll('.animated');
     animationCircles.forEach(circle => {
@@ -284,32 +307,36 @@ class PieChart extends HTMLElement {
       accumulatedAngle += value.angle;
       this._arcsContainer.appendChild(miniLabel);
 
-      if(!this._labelsRendered) {
-        this._renderLabels(value, targetIndex);
-      }
-      
-
-
     });
 
+    if(!this._labelsRendered) {
+      this._renderLabels();
+    }
 
   }
 
-  _renderLabels(value, index) {
-    let newLabel = document.createElement('li');
-    let colorRef = document.createElement('div');
-    colorRef.style.width = '15px';
-    colorRef.style.height = '15px';
-    colorRef.style.background = this._pieColors[index];
-    colorRef.style.display = 'inline-block';
-    let textRef = document.createElement('span');
-    textRef.innerText = value.label;
-    newLabel.appendChild(colorRef);
-    newLabel.appendChild(textRef);
-    newLabel.setAttribute('data-ref', value.label);
-    newLabel.style.marginBottom = '0.8rem';
-
-    this._labelsContainer.appendChild(newLabel);
+  _renderLabels() {
+    if (this._labelIsValid && !this._labelsRendered) {
+      this._values.forEach((value, index) => {
+        let newLabel = document.createElement('li');
+        let colorRef = document.createElement('div');
+        colorRef.style.width = '15px';
+        colorRef.style.height = '15px';
+        colorRef.style.background = this._pieColors[index];
+        colorRef.style.display = 'inline-block';
+        let textRef = document.createElement('span');
+        textRef.innerText = value.label;
+        newLabel.appendChild(colorRef);
+        newLabel.appendChild(textRef);
+        newLabel.setAttribute('data-ref', value.label);
+        newLabel.style.marginBottom = '0.8rem';
+    
+        this._labelsContainer.appendChild(newLabel);
+      });
+      this._labelsRendered = true;
+    } else {
+      this._root.querySelector('#labels').parentElement.removeChild(this._root.querySelector('#labels'));
+    }
   }
 
   get values () {
