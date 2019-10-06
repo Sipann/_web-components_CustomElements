@@ -2,8 +2,10 @@ const pieChartTemplate = document.createElement('template');
 pieChartTemplate.innerHTML = `
 <div class="container">
   <svg viewBox="-10 -10 120 120">
+    <rect x="-10" y="-10" width="120" height="120" />
     <g id="arcs">
     </g>
+    <circle id="donut" cx="50" cy="50" r="0" />
   </svg>
   <div id="info"></div>
   <div id="labels">
@@ -18,6 +20,11 @@ pieChartStyle.innerHTML = `
 :host {
   display: inline-block;
   width: 100%;
+}
+
+rect,
+#donut {
+  fill: var(--svg-bg, #fff);
 }
 
 #arcs path {
@@ -87,6 +94,7 @@ class PieChart extends HTMLElement {
     // DOM elements
     this._componentContainer = this._root.querySelector('.container');
     this._arcsContainer = this._root.querySelector('#arcs');
+    this._donut = this._root.querySelector('#donut');
     this._info= this._root.querySelector('#info');
     this._labelsContainer = this._root.querySelector('#labels ul');
     this._svgContainer = this._root.querySelector('svg');
@@ -95,6 +103,7 @@ class PieChart extends HTMLElement {
     this._animDuration = 0;
     this._animation = null;
     this._circleLength = 2 * Math.PI * 25;
+    
     this._labels = 'none';
     this._labelsRendered = false;
     this._pieColors = [];
@@ -131,6 +140,10 @@ class PieChart extends HTMLElement {
       this._svgContainer.addEventListener('mouseover', e => this._revealLabel(e), false);
       this._svgContainer.addEventListener('mouseleave', () => this._resetLabels(), false);
 
+    }
+
+    if (this.hasAttribute('donut-radius')) {
+      this._donut.setAttribute('r', this.getAttribute('donut-radius'));
     }
 
   }
