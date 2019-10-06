@@ -2,13 +2,7 @@ const pieChartTemplate = document.createElement('template');
 pieChartTemplate.innerHTML = `
 <div class="container">
   <svg viewBox="-10 -10 120 120">
-    <defs>
-      <mask id="donut-mask">
-        <circle cx="50" cy="50" r="50" fill="white" />
-        <circle cx="50" cy="50" r="5" fill="black" />
-      </mask>
-    </defs>
-    <g id="arcs" mask="url(#donut-mask)">
+    <g id="arcs">
     </g>
   </svg>
   <div id="info"></div>
@@ -92,18 +86,23 @@ class PieChart extends HTMLElement {
     this._svgContainer = this._root.querySelector('svg');
     this._arcsContainer = this._root.querySelector('#arcs');
     this._labelsContainer = this._root.querySelector('#labels ul');
-    this._mask = this._root.querySelector('#donut-mask circle:nth-child(2)');
     this._info= this._root.querySelector('#info');
 
     // data 
     this._labels = [];
     this._values = [];
-    this._valuesColor = ['#bca18d', '#f2746b', '#f14d49', 'green', 'blue', 'yellow'];
+    this._valuesColor = ['#bca18d', '#f2746b', '#f14d49', 'green', 'grey', 'yellow'];
     this._size = 0;
+    this._circleLength = 2 * Math.PI * 25;
+    this._animation = null;
+    this._animDuration = 0;
+    this._labelsRendered = false;
   }
 
   connectedCallback() {
-    this._mask.setAttribute('r', 20);
+    
+    this._animation = this.getAttribute('animation') || null;
+    this._animDuration = parseInt(this.getAttribute('anim-duration')) || 0;
 
     this._svgContainer.addEventListener('click', e => this._displayInfo(e), false );
     this._svgContainer.addEventListener('mouseover', e => this._revealLabel(e), false);
@@ -115,10 +114,6 @@ class PieChart extends HTMLElement {
 
   static get observedAttributes() {
     return [];
-  }
-
-  attributeChangedCallback(name, oldValue, newValue) {
-
   }
 
   _displayInfo(e) {
@@ -195,17 +190,89 @@ class PieChart extends HTMLElement {
     };
   }
 
+  _animate() {
+    // console.log('this._values', this._values);
+    let accumulatedAngle = -90;
+    let accumulatedValue = 0;
+    
+    this._values.forEach((value, index) => {
+    
+        let newCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        let targetIndex = index % this._valuesColor.length;
+        newCircle.classList.add('animated');
+        newCircle.setAttribute('stroke', this._valuesColor[targetIndex]);
+        newCircle.setAttribute('stroke-width', 0);
+        newCircle.setAttribute('cx', 50);
+        newCircle.setAttribute('cy', 50);
+        newCircle.setAttribute('r', 25);
+        newCircle.setAttribute('fill', 'none');
+        newCircle.style.transformOrigin = '50px 50px';
+        newCircle.setAttribute('transform', `rotate(${accumulatedAngle})`);
+
+        accumulatedAngle += value.angle;
+  
+        let strokeDash = value.proportion * this._circleLength;
+        let strokeGap = this._circleLength - strokeDash;
+        let strokeDashFrom = 0;
+        let strokeDashTo = strokeDash;
+        let strokeGapFrom = this._circleLength;
+        let strokeGapTo = strokeGap;
+        let duration;
+        let delay = 0;
+        
+  
+  
+        this._arcsContainer.appendChild(newCircle);
+  
+        if (this._animation === 'all') {
+          duration = this._animDuration;
+        } else if (this._animation === 'seq') {
+          duration = this._animDuration * value.proportion;
+          delay = this._animDuration * accumulatedValue;
+          accumulatedValue += value.proportion;
+        }
+  
+        newCircle.animate([
+          { strokeWidth: 50, strokeDasharray: `${strokeDashFrom.toFixed(2)} ${strokeGapFrom.toFixed(2)}`},
+          { strokeWidth: 50, strokeDasharray: `${strokeDashTo.toFixed(2)} ${strokeGapTo.toFixed(2)}`},
+        ], {
+          delay: delay,
+          duration: duration,
+          fill: 'forwards'
+        })
+  
+        this._renderLabels(value, targetIndex);
+        this._labelsRendered = true;
+
+    });
+
+    setTimeout(() => {
+      this._render();
+    }, this._animDuration + 500);
+  }
+
+  
   
   _render() {
+    console.log('this._values', this._values);
+
+    let animationCircles = document.querySelectorAll('.animated');
+    animationCircles.forEach(circle => {
+      document.removeChild(circle);
+    });
+
     let accumulatedAngle = 0;
     this._values.forEach((value, index) => {
       let newArc = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       let targetIndex = index % this._valuesColor.length;
       newArc.setAttribute('fill', this._valuesColor[targetIndex]);
       let newArcPath = this._describeArc(accumulatedAngle, value.angle + accumulatedAngle);
-      newArc.setAttribute('id', value.label);
+      
+         
       newArc.setAttribute('d', newArcPath);
+      newArc.setAttribute('id', value.label);
       this._arcsContainer.appendChild(newArc);
+
 
       let miniLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       miniLabel.textContent = value.label;
@@ -218,26 +285,32 @@ class PieChart extends HTMLElement {
       accumulatedAngle += value.angle;
       this._arcsContainer.appendChild(miniLabel);
 
-
-      let newLabel = document.createElement('li');
-      let colorRef = document.createElement('div');
-      colorRef.style.width = '15px';
-      colorRef.style.height = '15px';
-      colorRef.style.background = this._valuesColor[targetIndex];
-      colorRef.style.display = 'inline-block';
-      let textRef = document.createElement('span');
-      textRef.innerText = value.label;
-      newLabel.appendChild(colorRef);
-      newLabel.appendChild(textRef);
-      newLabel.setAttribute('data-ref', value.label);
-      newLabel.style.marginBottom = '0.8rem';
-
-      this._labelsContainer.appendChild(newLabel);
+      if(!this._labelsRendered) {
+        this._renderLabels(value, targetIndex);
+      }
+      
 
 
     });
 
 
+  }
+
+  _renderLabels(value, index) {
+    let newLabel = document.createElement('li');
+    let colorRef = document.createElement('div');
+    colorRef.style.width = '15px';
+    colorRef.style.height = '15px';
+    colorRef.style.background = this._valuesColor[index];
+    colorRef.style.display = 'inline-block';
+    let textRef = document.createElement('span');
+    textRef.innerText = value.label;
+    newLabel.appendChild(colorRef);
+    newLabel.appendChild(textRef);
+    newLabel.setAttribute('data-ref', value.label);
+    newLabel.style.marginBottom = '0.8rem';
+
+    this._labelsContainer.appendChild(newLabel);
   }
 
   get values () {
@@ -260,7 +333,12 @@ class PieChart extends HTMLElement {
         angle: 360 * proportion
       });
     });
-    this._render();
+    if (this._animation) {
+      this._animate();
+    } else {
+      this._render();
+    }
+    
   }
 
   get valuesColor() {
