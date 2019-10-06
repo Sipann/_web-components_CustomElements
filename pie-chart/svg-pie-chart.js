@@ -77,7 +77,12 @@ li.revealed span {
 }
 
 li span {
-  display: inline-block
+  display: inline-block;
+  pointer-events: none;
+}
+
+li div {
+  pointer-events: none;
 }
 
 </style>`;
@@ -101,7 +106,7 @@ class PieChart extends HTMLElement {
 
     // data 
     this._animDuration = 0;
-    this._animation = null;
+    this._animation = '';
     this._circleLength = 2 * Math.PI * 25;
     
     this._labels = 'none';
@@ -115,7 +120,6 @@ class PieChart extends HTMLElement {
   connectedCallback() {
     
     let size = parseInt(window.getComputedStyle(this).width);
-    console.log('size', size);
 
     this._animation = this.getAttribute('animation') || null;
     this._animDuration = parseInt(this.getAttribute('anim-duration')) || 0;
@@ -135,7 +139,7 @@ class PieChart extends HTMLElement {
       if (this._labels === 'left' || this._labels === 'top') {
         this._root.querySelector('#labels').style.order = -1;
       }
-      this._labelsContainer.addEventListener('mouseover', e => this._revealSector(e), false);
+      this._labelsContainer.addEventListener('mouseover', e => this._revealSector(e), true);
       this._labelsContainer.addEventListener('mouseleave', () => this._resetSectors(), false);
       this._svgContainer.addEventListener('mouseover', e => this._revealLabel(e), false);
       this._svgContainer.addEventListener('mouseleave', () => this._resetLabels(), false);
@@ -190,9 +194,12 @@ class PieChart extends HTMLElement {
 
   _revealSector(e) {
     if (e.target.nodeName === 'LI') {
+      console.log('revealSector, targeting LI');
       this._resetSectors();
       let targetSector = this._root.querySelector(`#${e.target.dataset.ref}`);
       targetSector.classList.add('revealed');
+    } else {
+      console.log('revealSector', e.target.nodeName);
     }
   }
 
