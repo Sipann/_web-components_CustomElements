@@ -53,10 +53,6 @@ rect,
   flex-direction: column;
 }
 
-svg {
-  // border: 2px blue solid;
-}
-
 svg circle.animated {
   fill: none;
   stroke-width: 0px;
@@ -125,7 +121,6 @@ svg text {
   margin-bottom: 0.3rem;
 }
 
-
 .vertical #labels ul {
   width: 80%;
 }
@@ -145,7 +140,6 @@ li {
   align-items: center;
   margin-right: var(--margin-list-item, 0);
   margin-bottom: .8rem;
-  
 }
 
 .vertical li {
@@ -204,10 +198,6 @@ class PieChart extends HTMLElement {
     this._pieColors = [];   // set from .pieColors property setter
     this._tags = false;   // set from attribute on component
     this._values = [];    // set from .values property setter
-    /////
-    this._labelsContainerWidth = 0;
-    this._labelsContainerHeight = 0;
-    this._size = 0;
   }
 
   connectedCallback() {
