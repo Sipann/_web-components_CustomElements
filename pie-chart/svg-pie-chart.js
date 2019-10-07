@@ -255,39 +255,7 @@ class PieChart extends HTMLElement {
 
   }
 
-  //
-  _displayInfo(e) {
 
-    let componentRect = this.getBoundingClientRect();
-    this._offsetTop = this._svgContainer.getBoundingClientRect().top;
-    this._offsetLeft = this._svgContainer.getBoundingClientRect().left;
-
-
-    if (e.target.nodeName === 'path') {
-      let target = this._values.find(el => {
-        return el.label === e.target.id
-      });
-      this._infos.classList.add('show');
-      this._infos.querySelector('span').addEventListener('click', () => {
-        this._infos.classList.remove('show');
-      });
-      this._infos.querySelector('#value').innerText = `value: ${target.value}`;
-      this._infos.querySelector('#proportion').innerText = `proportion: ${parseInt(target.proportion * 100)}%`;
-
-      // get labels container size
-      this._labelsContainerWidth = parseInt(getComputedStyle(this._root.querySelector('#labels')).width);
-      this._labelsContainerHeight = parseInt(getComputedStyle(this._root.querySelector('#labels')).height);
-
-      let positionTop = e.clientY - this._offsetTop; 
-      let positionLeft = e.clientX - this._offsetLeft;
-
-      let normalizedPositionTop = this._labels === 'top' ? positionTop + this._labelsContainerHeight : positionTop;
-      let normalizedPositionLeft = this._labels === 'left' ? positionLeft + this._labelsContainerWidth : positionLeft;
-
-      this._infos.style.top = `${normalizedPositionTop}px`;
-      this._infos.style.left = `${normalizedPositionLeft}px`;
-    }
-  }
 
 
   _animate() {
@@ -351,6 +319,40 @@ class PieChart extends HTMLElement {
 
     return `M50 50 L ${start.x} ${start.y} A 50,50 0, ${arcSweep} 1 ${end.x} ${end.y}`;
   }
+
+    //
+    _displayInfo(e) {
+
+      let componentRect = this.getBoundingClientRect();
+      this._offsetTop = this._svgContainer.getBoundingClientRect().top;
+      this._offsetLeft = this._svgContainer.getBoundingClientRect().left;
+  
+  
+      if (e.target.nodeName === 'path') {
+        let target = this._values.find(el => {
+          return el.label === e.target.id
+        });
+        this._infos.classList.add('show');
+        this._infos.querySelector('span').addEventListener('click', () => {
+          this._infos.classList.remove('show');
+        });
+        this._infos.querySelector('#value').innerText = `value: ${target.value}`;
+        this._infos.querySelector('#proportion').innerText = `proportion: ${parseInt(target.proportion * 100)}%`;
+  
+        // get labels container size
+        let labelsContainerWidth = this._labelIsValid ? parseInt(getComputedStyle(this._root.querySelector('#labels')).width) : 0;
+        let labelsContainerHeight = this._labelIsValid ? parseInt(getComputedStyle(this._root.querySelector('#labels')).height) : 0;
+  
+        let positionTop = e.clientY - this._offsetTop; 
+        let positionLeft = e.clientX - this._offsetLeft;
+  
+        let normalizedPositionTop = this._labels === 'top' ? positionTop + labelsContainerHeight : positionTop;
+        let normalizedPositionLeft = this._labels === 'left' ? positionLeft + labelsContainerWidth : positionLeft;
+  
+        this._infos.style.top = `${normalizedPositionTop}px`;
+        this._infos.style.left = `${normalizedPositionLeft}px`;
+      }
+    }
 
   _polarToCartesian(angleInDegrees, radius) {
     var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
