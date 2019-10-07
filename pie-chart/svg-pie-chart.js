@@ -9,7 +9,6 @@ pieChartTemplate.innerHTML = `
   </svg>
   <div id="infos">
     <span>&times;</span>
-    <p id="label"></p>
     <p id="value"></p>
     <p id="proportion"></p>
   </div>
@@ -25,6 +24,7 @@ pieChartStyle.innerHTML = `
 :host {
   display: inline-block;
   width: 100%;
+  font-family: sans-serif;
 }
 
 rect,
@@ -38,13 +38,12 @@ rect,
 
 #arcs path:hover,
 #arcs path.revealed {
-  fill: var(--hover-bg, green);
+  fill: var(--hover-bg, #babadc);
 }
 
 .container {
-  width: 100%;
-  // height: var(--computed-height);
   position: relative;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -55,54 +54,60 @@ rect,
 }
 
 svg {
-  // width: 100%;
-  border: 2px blue solid;
+  // border: 2px blue solid;
 }
 
 svg circle.animated {
-  transform-origin: 50px 50px;
   fill: none;
   stroke-width: 0px;
   pointer-events: none;
+  transform-origin: 50px 50px;
 }
 
 svg path {
   cursor: pointer;
 }
 
-
 svg text {
   stroke: none;
   fill: var(--text-color, #333);
-  font-size: var(--text-size, .4rem);
+  font-size: var(--text-size, .26rem);
   font-weight: var(--text-weight, 900);
+  font-family: var(--text-family, sans-serif);
   pointer-events: none;
+  user-select: none;
 }
 
 #infos {
   position: absolute;
+  min-width: fit-content;
   display: none;
-  background: yellow;
-  border-radius: 5px;
   padding: .8rem;
+  background: var(--tooltip-bg, #333);
+  color: var(--tooltip-color, #fff);
+  border-radius: 5px;
   flex-direction: column;
   align-items: center;
-  min-width: fit-content;
+  user-select: none;
   transform: translate(-50%, calc(-100% - 15px));
+}
+
+#infos.show {
+  display: flex
 }
 
 #infos::after {
   content: '';
-  display: block;
-  width: 0;
-  height: 0;
-  border-top: 12px solid green;
-  border-bottom: 12px solid transparent;
-  border-right: 12px solid transparent;
-  border-left: 12px solid transparent;
   position: absolute;
   top: 100%;
   left: calc(50% - 12px);
+  display: block;
+  width: 0;
+  height: 0;
+  border-top: 12px solid var(--tooltip-bg, #333);
+  border-bottom: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-left: 12px solid transparent;
 }
 
 #infos span {
@@ -115,32 +120,30 @@ svg text {
   cursor: pointer;
 }
 
-#infos.show {
-  display: flex
-}
-
 #infos p {
   margin: 0;
+  margin-bottom: 0.3rem;
 }
+
 
 .vertical #labels ul {
   width: 80%;
 }
 
 ul {
-  list-style: none;
-  margin: 1rem;
   width: var(--width-label, 120px);
+  margin: 1rem;
+  padding: var(--border-label-padding, 1rem);
+  list-style: none;
   border: var(--border-label, 2px solid #333);
   border-radius: var(--border-label-radius, 10px);
-  padding: var(--border-label-padding, 1rem);
 }
 
 li {
   display: var(--display-list-item, flex);
-  margin-right: var(--margin-list-item, 0);
   justify-content: space-around;
   align-items: center;
+  margin-right: var(--margin-list-item, 0);
   margin-bottom: .8rem;
   
 }
@@ -152,7 +155,8 @@ li {
 
 li:hover span,
 li.revealed span {
-  color: var(--hover-label, deeppink);
+  color: var(--hover-label-color, #333);
+  background: var(--hover-label-bg, #babadc);
 }
 
 li span {
@@ -161,11 +165,11 @@ li span {
 }
 
 li div {
-  pointer-events: none;
-  margin-right: .3rem;
   width: 15px;
   height: 15px;
+  margin-right: .3rem;
   display: inline-block;
+  pointer-events: none;
 }
 
 </style>`;
@@ -180,48 +184,44 @@ class PieChart extends HTMLElement {
     this._root.appendChild(pieChartStyle);
 
     // DOM elements
-    this._componentContainer = this._root.querySelector('.container');
     this._arcsContainer = this._root.querySelector('#arcs');
+    this._componentContainer = this._root.querySelector('.container');
     this._donut = this._root.querySelector('#donut');
     this._infos= this._root.querySelector('#infos');
     this._labelsContainer = this._root.querySelector('#labels ul');
     this._svgContainer = this._root.querySelector('svg');
 
     // data 
-    this._animDuration = 0;
-    this._animation = '';
-    this._circleLength = 2 * Math.PI * 25;
-    
-    this._labels = 'none';
-    this._labelsRendered = false;
-    this._pieColors = [];
-    this._size = 0;
-    this._values = [];
-    this._labelIsValid = false;
-    this._animationIsValid = false;
-    this._tags = false;
-    this._offsetTop = 0;
-    this._offsetLeft = 0;
+    this._animDuration = 0;   // set from attribute on component
+    this._animation = '';   // set from attribute on component
+    this._animationIsValid = false;   // computed
+    this._circleLength = 2 * Math.PI * 25;    //constant = 2 * Math.PI * svg circle radius
+    this._labelIsValid = false;     // computed
+    this._labels = 'none';   // set from attribute on component
+    this._labelsRendered = false;   // computed
+    this._offsetLeft = 0;   // computed
+    this._offsetTop = 0;   // computed
+    this._pieColors = [];   // set from .pieColors property setter
+    this._tags = false;   // set from attribute on component
+    this._values = [];    // set from .values property setter
+    /////
     this._labelsContainerWidth = 0;
     this._labelsContainerHeight = 0;
+    this._size = 0;
   }
 
   connectedCallback() {
-
-    
+    // animation data
+    this._animDuration = parseInt(this.getAttribute('anim-duration')) || 0;
     this._animation = this.getAttribute('animation') || null;
     this._animationIsValid = this._animation === 'all' || this._animation === 'seq';
-    if (this._animationIsValid) {
-      this._animDuration = parseInt(this.getAttribute('anim-duration')) || 0;
-    }
-
+    
+    // tags data
     this._tags = this.hasAttribute('tags');
 
-    
-
+    // labels data
     this._labels = this.getAttribute('labels') || null;
     this._labelIsValid = this._labels === 'bottom' || this._labels === 'top' || this._labels === 'left' || this._labels === 'right';
-
     if (this._labelIsValid) {
       if (this._labels === 'bottom' || this._labels === 'top') {
         this._componentContainer.classList.add('vertical');
@@ -229,12 +229,9 @@ class PieChart extends HTMLElement {
       if (this._labels === 'left' || this._labels === 'top') {
         this._root.querySelector('#labels').style.order = -1;
       }
-
     } 
 
-    this._svgContainer.addEventListener('click', e => this._displayInfo(e), false );
-    
-    // set SVG size
+    // compute svg size attributes
     let totalWidth = getComputedStyle(this).width;
     if (!this._labels || this._labels === 'top' || this._labels === 'bottom') {
       this._svgContainer.setAttribute('width', totalWidth);
@@ -246,68 +243,61 @@ class PieChart extends HTMLElement {
       this._svgContainer.setAttribute('height', svgSize);
     }
 
-    
-    
-
+    // donut circle radius
     if (this.hasAttribute('donut-radius')) {
       this._donut.setAttribute('r', this.getAttribute('donut-radius'));
     }
-
   }
 
   disconnectedCallback() {
     this._svgContainer.removeEventListener('mouseover', this._revealLabel);
-    this._svgContainer.removeEventListener('mouseleave', this._resetLabels);
+    this._svgContainer.removeEventListener('mouseleave', this._reset);
     this._svgContainer.removeEventListener('click', this._displayInfo);
-    this._labelsContainer.removeEventListener('mouseover', this._revealSector, true);
-    this._labelsContainer.removeEventListener('mouseleave', this._resetSectors);
+    this._labelsContainer.removeEventListener('mouseover', this._revealSector);
+    this._labelsContainer.removeEventListener('mouseleave', this._reset);
     this._infos.querySelector('span').removeEventListener('click', this._hideInfo);
   }
 
 
-
-
   _animate() {
     if (this._animationIsValid) {
-      let accumulatedAngle = -90;  // to align starting arc with y axis
+      let accumulatedAngle = -90;  // align starting arc with y axis instead of x.
       let accumulatedDuration = 0;
       
       this._values.forEach((value, index) => {
-      
-          let newCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-          let targetIndex = index % this._pieColors.length;
-          newCircle.classList.add('animated');
-          newCircle.setAttribute('stroke', this._setColor(index));
-          newCircle.setAttribute('cx', 50);
-          newCircle.setAttribute('cy', 50);
-          newCircle.setAttribute('r', 25);
-          newCircle.setAttribute('transform', `rotate(${accumulatedAngle})`);
+        let delay, duration;
+        let strokeDashTo = value.proportion * this._circleLength;
+        let strokeGapTo = this._circleLength - strokeDashTo;
+
+        let newCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        newCircle.classList.add('animated');
+        newCircle.setAttribute('stroke', this._setColor(index));
+        newCircle.setAttribute('cx', 50);
+        newCircle.setAttribute('cy', 50);
+        newCircle.setAttribute('r', 25);
+        newCircle.setAttribute('transform', `rotate(${accumulatedAngle})`);
+
+        accumulatedAngle += value.angle;
+    
+        this._arcsContainer.appendChild(newCircle);
   
-          accumulatedAngle += value.angle;
-    
-          let strokeDashTo = value.proportion * this._circleLength;
-          let strokeGapTo = this._circleLength - strokeDashTo;
-          let duration;
-          let delay = 0;
-    
-          this._arcsContainer.appendChild(newCircle);
-    
-          if (this._animation === 'all') {
-            duration = this._animDuration;
-          } else if (this._animation === 'seq') {
-            duration = this._animDuration * value.proportion;
-            delay = this._animDuration * accumulatedDuration;
-            accumulatedDuration += value.proportion;
-          }
-    
-          newCircle.animate([
-            { strokeWidth: 50, strokeDasharray: `0 ${this._circleLength.toFixed(2)}`},
-            { strokeWidth: 50, strokeDasharray: `${strokeDashTo.toFixed(2)} ${strokeGapTo.toFixed(2)}`},
-          ], {
-            delay: delay,
-            duration: duration,
-            fill: 'forwards'
-          })
+        if (this._animation === 'all') {
+          delay = 0;
+          duration = this._animDuration;
+        } else if (this._animation === 'seq') {
+          delay = this._animDuration * accumulatedDuration;
+          duration = this._animDuration * value.proportion;
+          accumulatedDuration += value.proportion;
+        }
+  
+        newCircle.animate([
+          { strokeWidth: 50, strokeDasharray: `0 ${this._circleLength.toFixed(2)}`},
+          { strokeWidth: 50, strokeDasharray: `${strokeDashTo.toFixed(2)} ${strokeGapTo.toFixed(2)}`},
+        ], {
+          delay: delay,
+          duration: duration,
+          fill: 'forwards'
+        });
          
       });
   
@@ -332,12 +322,12 @@ class PieChart extends HTMLElement {
   
   _displayInfo(e) {
 
-    let componentRect = this.getBoundingClientRect();
-    this._offsetTop = this._svgContainer.getBoundingClientRect().top;
-    this._offsetLeft = this._svgContainer.getBoundingClientRect().left;
-
-
     if (e.target.nodeName === 'path') {
+      // hightlight currently clicked sector
+      this._reset('path');
+      e.target.classList.add('revealed');
+
+      // find info relative to this sector & display them
       let target = this._values.find(el => {
         return el.label === e.target.id
       });
@@ -346,10 +336,15 @@ class PieChart extends HTMLElement {
       this._infos.querySelector('#value').innerText = `value: ${target.value}`;
       this._infos.querySelector('#proportion').innerText = `proportion: ${parseInt(target.proportion * 100)}%`;
 
+      // get svg container size
+      this._offsetTop = this._svgContainer.getBoundingClientRect().top;
+      this._offsetLeft = this._svgContainer.getBoundingClientRect().left;
+      
       // get labels container size
       let labelsContainerWidth = this._labelIsValid ? parseInt(getComputedStyle(this._root.querySelector('#labels')).width) : 0;
       let labelsContainerHeight = this._labelIsValid ? parseInt(getComputedStyle(this._root.querySelector('#labels')).height) : 0;
 
+      // set display tooltip position relative to mouse cursor
       let positionTop = e.clientY - this._offsetTop; 
       let positionLeft = e.clientX - this._offsetLeft;
 
@@ -363,6 +358,7 @@ class PieChart extends HTMLElement {
 
   _hideInfo() {
     this._infos.classList.remove('show');
+    this._reset('path');
   }
 
   _polarToCartesian(angleInDegrees, radius) {
@@ -373,8 +369,6 @@ class PieChart extends HTMLElement {
     };
   }
 
- 
-
   _render() {
     // clean up animation circles when _render() is called from _animate()
     let animationCircles = document.querySelectorAll('.animated');
@@ -382,28 +376,25 @@ class PieChart extends HTMLElement {
       document.removeChild(circle);
     });
 
+    // add event listeners to _svgContainer and _labelsContainer
+    this._svgContainer.addEventListener('click', e => this._displayInfo(e), false );
     if (this._labelIsValid) {
-      this._labelsContainer.addEventListener('mouseover', e => this._revealSector(e), true);
-      this._labelsContainer.addEventListener('mouseleave', () => this._resetSectors(), false);
+      this._labelsContainer.addEventListener('mouseover', e => this._revealSector(e), false);  // TBU
+      this._labelsContainer.addEventListener('mouseleave', () => this._reset('path'), false);
       this._svgContainer.addEventListener('mouseover', e => this._revealLabel(e), false);
-      this._svgContainer.addEventListener('mouseleave', () => this._resetLabels(), false);
+      this._svgContainer.addEventListener('mouseleave', () => this._reset('li'), false);
     }
 
     // set pie-chart's final arcs
     let accumulatedAngle = 0;
     this._values.forEach((value, index) => {
-      let newArc = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-
-      let targetIndex = index % this._pieColors.length;
-      
-      newArc.setAttribute('fill', this._setColor(index));
-
-
       let newArcPath = this._describeArc(accumulatedAngle, value.angle + accumulatedAngle);
+      let newArc = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      newArc.setAttribute('fill', this._setColor(index));
       newArc.setAttribute('d', newArcPath);
       newArc.setAttribute('id', value.label);
       this._arcsContainer.appendChild(newArc);
-
+      
       if (this._tags) {
         this._renderTag(value, accumulatedAngle);
       }
@@ -421,7 +412,6 @@ class PieChart extends HTMLElement {
       return this._pieColors[index % this._pieColors.length]
     }
   }
-  
 
   _renderLabels() {
     if (this._labelIsValid) {
@@ -450,32 +440,25 @@ class PieChart extends HTMLElement {
 
   _renderTag(value, accumulatedAngle) {
     let miniLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      miniLabel.textContent = value.label;
-      let coords = this._polarToCartesian(value.angle / 2 + accumulatedAngle, 40);
-      miniLabel.setAttribute('x', coords.x);
-      miniLabel.setAttribute('y', coords.y);
-      miniLabel.setAttribute('text-anchor', 'middle');
-      this._arcsContainer.appendChild(miniLabel);
+    miniLabel.textContent = value.label;
+    let coords = this._polarToCartesian(value.angle / 2 + accumulatedAngle, 40);
+    miniLabel.setAttribute('x', coords.x);
+    miniLabel.setAttribute('y', coords.y);
+    miniLabel.setAttribute('text-anchor', 'middle');
+    this._arcsContainer.appendChild(miniLabel);
   }
 
-  _resetLabels() {
-    let allLabels = this._labelsContainer.querySelectorAll('li');
-    allLabels.forEach(item => {
-      item.classList = [];
-    });
-  }
-
-  _resetSectors() {
-    let allSectors = this._root.querySelectorAll('path');
-    allSectors.forEach(sector => {
-      sector.classList = [];
+  _reset(nodeName) {
+    let allNodes = this._root.querySelectorAll(nodeName);
+    allNodes.forEach(node => {
+      node.classList = [];
     });
   }
 
   _revealLabel(e) {
     if (e.target.nodeName === 'path') {
       let target = e.target.id;
-      this._resetLabels();
+      this._reset('li');
       let targetLabel = this._root.querySelector(`[data-ref="${target}"]`);
       targetLabel.classList.add('revealed');
     }
@@ -483,7 +466,7 @@ class PieChart extends HTMLElement {
 
   _revealSector(e) {
     if (e.target.nodeName === 'LI') {
-      this._resetSectors();
+      this._reset('path');
       let targetSector = this._root.querySelector(`#${e.target.dataset.ref}`);
       targetSector.classList.add('revealed');
     } 
@@ -512,12 +495,8 @@ class PieChart extends HTMLElement {
         angle: 360 * proportion
       });
     });
-    if (this._animation) {
-      this._animate();
-    } else {
-      this._render();
-    }
-    
+    if (this._animation) { this._animate(); } 
+    else { this._render(); }
   }
 
   set pieColors(value) {
