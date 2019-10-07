@@ -107,7 +107,7 @@ pieChart.values = values;
 ```html
 <!--
   animated in sequence
-  over 200ms
+  over 2000ms
   donut shaped
   set labels at the top of the pie
   set tags on the pie -->
