@@ -268,7 +268,7 @@ class PieChart extends HTMLElement {
           let newCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
           let targetIndex = index % this._pieColors.length;
           newCircle.classList.add('animated');
-          newCircle.setAttribute('stroke', this._pieColors[targetIndex]);
+          newCircle.setAttribute('stroke', this._setColor(index));
           newCircle.setAttribute('cx', 50);
           newCircle.setAttribute('cy', 50);
           newCircle.setAttribute('r', 25);
@@ -375,8 +375,12 @@ class PieChart extends HTMLElement {
     let accumulatedAngle = 0;
     this._values.forEach((value, index) => {
       let newArc = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+
       let targetIndex = index % this._pieColors.length;
-      newArc.setAttribute('fill', this._pieColors[targetIndex]);
+      
+      newArc.setAttribute('fill', this._setColor(index));
+
+
       let newArcPath = this._describeArc(accumulatedAngle, value.angle + accumulatedAngle);
       newArc.setAttribute('d', newArcPath);
       newArc.setAttribute('id', value.label);
@@ -391,6 +395,14 @@ class PieChart extends HTMLElement {
 
     this._renderLabels();
   }
+
+  _setColor(index) {
+    if (this._pieColors.length === this._values.length -1) {
+      return index < this._pieColors.length ? this._pieColors[index % this._pieColors.length] : this._pieColors[(index % this._pieColors.length) + 1];
+    } else {
+      return this._pieColors[index % this._pieColors.length]
+    }
+  }
   
 
   _renderLabels() {
@@ -401,7 +413,7 @@ class PieChart extends HTMLElement {
           let colorRef = document.createElement('div');
           colorRef.style.width = '15px';
           colorRef.style.height = '15px';
-          colorRef.style.background = this._pieColors[index];
+          colorRef.style.background = this._setColor(index);
           colorRef.style.display = 'inline-block';
           let textRef = document.createElement('span');
           textRef.innerText = value.label;
