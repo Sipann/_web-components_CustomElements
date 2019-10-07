@@ -225,10 +225,6 @@ class PieChart extends HTMLElement {
       if (this._labels === 'left' || this._labels === 'top') {
         this._root.querySelector('#labels').style.order = -1;
       }
-      this._labelsContainer.addEventListener('mouseover', e => this._revealSector(e), true);
-      this._labelsContainer.addEventListener('mouseleave', () => this._resetSectors(), false);
-      this._svgContainer.addEventListener('mouseover', e => this._revealLabel(e), false);
-      this._svgContainer.addEventListener('mouseleave', () => this._resetLabels(), false);
 
     } 
 
@@ -253,6 +249,15 @@ class PieChart extends HTMLElement {
       this._donut.setAttribute('r', this.getAttribute('donut-radius'));
     }
 
+  }
+
+  disconnectedCallback() {
+    this._svgContainer.removeEventListener('mouseover', this._revealLabel);
+    this._svgContainer.removeEventListener('mouseleave', this._resetLabels);
+    this._svgContainer.removeEventListener('click', this._displayInfo);
+    this._labelsContainer.removeEventListener('mouseover', this._revealSector, true);
+    this._labelsContainer.removeEventListener('mouseleave', this._resetSectors);
+    this._infos.querySelector('span').removeEventListener('click', this._hideInfo);
   }
 
 
@@ -333,9 +338,7 @@ class PieChart extends HTMLElement {
           return el.label === e.target.id
         });
         this._infos.classList.add('show');
-        this._infos.querySelector('span').addEventListener('click', () => {
-          this._infos.classList.remove('show');
-        });
+        this._infos.querySelector('span').addEventListener('click', this._hideInfo.bind(this));
         this._infos.querySelector('#value').innerText = `value: ${target.value}`;
         this._infos.querySelector('#proportion').innerText = `proportion: ${parseInt(target.proportion * 100)}%`;
   
@@ -354,6 +357,10 @@ class PieChart extends HTMLElement {
       }
     }
 
+  _hideInfo() {
+    this._infos.classList.remove('show');
+  }
+
   _polarToCartesian(angleInDegrees, radius) {
     var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
     return {
@@ -370,6 +377,13 @@ class PieChart extends HTMLElement {
     animationCircles.forEach(circle => {
       document.removeChild(circle);
     });
+
+    if (this._labelIsValid) {
+      this._labelsContainer.addEventListener('mouseover', e => this._revealSector(e), true);
+      this._labelsContainer.addEventListener('mouseleave', () => this._resetSectors(), false);
+      this._svgContainer.addEventListener('mouseover', e => this._revealLabel(e), false);
+      this._svgContainer.addEventListener('mouseleave', () => this._resetLabels(), false);
+    }
 
     // set pie-chart's final arcs
     let accumulatedAngle = 0;
