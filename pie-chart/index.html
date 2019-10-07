@@ -24,14 +24,6 @@
     pie-chart {
       width: 400px;
       position: relative;
-      --border-label: 2px dashed red;
-      --border-label-padding: 1rem;
-      --border-label-radius: 20px;
-      --hover-bg: blue;
-      --text-color: #333;
-      --text-size: 0.3rem;
-      --hover-label: red;
-      --width-label: 120px;
    }
   </style>
 </head>
@@ -39,23 +31,25 @@
 
   <div id="app">
     <pie-chart
-    anim-duration=4000
-    labels='right'
-    donut-radius="10"></pie-chart>
+    animation="seq"
+    labels="top"
+    anim-duration=2000
+    tags
+    donut-radius=15></pie-chart>
   </div>
   
   
   <script>
   let pieChart = document.querySelector('pie-chart');
   let values = [
-    { 'item0' : 75 },
-    { 'item1' : 20 },
-    { 'item2' : 10 },
-    { 'item3' : 10 },
-    { 'item4' : 10 },
-    { 'item5' : 15 },
+    { 'working' : 75 },
+    { 'reading' : 20 },
+    { 'cooking' : 10 },
+    { 'writing' : 10 },
+    { 'walking' : 10 },
+    { 'socializing' : 15 },
   ];
-  let pieColors = ['#bca18d', '#f2746b', '#f14d49', 'green', 'grey', 'yellow'];
+  let pieColors = ['rgb(161,239,197)', 'rgb(79,249,159)', 'rgb(191,243,215)', 'rgb(130,247,185)', 'rgb(24,247,128)'];
 
   pieChart.pieColors = pieColors;
   pieChart.values = values;
