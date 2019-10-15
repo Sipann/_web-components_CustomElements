@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="./icon-bear.js"></script>
+  <script src="./icon-cat.js"></script>
+  <script src="./icon-elephant.js"></script>
+  <script src="./icon-monkey.js"></script>
+  <script src="./icon-penguin.js"></script>
+  <script src="./icon-rabbit.js"></script>
+  <script src="./icon-turtle.js"></script>
+  <script src="./icon-whale.js"></script>
+  <script src="./one-step.js"></script>
+  <script src="./progress-steps.js"></script>
+  <style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+  }
+
+  progress-steps {
+    width: 250px;
+    height: 600px;
+  }
+
+  div#controls {
+    width: 250px;
+    height: 300px;
+    border: 4px solid #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  button {
+    width: 150px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    padding: 1rem 2rem;
+    border: none;
+    background: #0069ed;
+    color: #fff;
+    font-family: sans-serif;
+    text-decoration: none;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    outline: 0;
+  }
+
+  #branch-0,
+  #branch-1 {
+    display: none;
+    margin: 1rem;
+  }
+
+  
+
+
+  </style>
+</head>
+<body>
+
+
+  <progress-steps 
+    currentstep=0 
+    ratio=0.4
+    direction="vertical"></progress-steps>
+  <div id="controls">
+    <button id="next">Next</button>
+    <button id="branch-0">South</button>
+    <button id="branch-1">North</button>
+  </div>
+<script>
+  let progressSteps = document.querySelector('progress-steps');
+  let steps = [
+    ['icon-cat', 'icon-turtle', 'icon-rabbit'],
+    ['icon-monkey', 'icon-elephant'],
+    ['icon-whale', 'icon-bear', 'icon-penguin'],
+  ];
+  progressSteps.steps = steps;
+
+
+  let buttonNext = document.querySelector('button#next');
+  buttonNext.addEventListener('click', () => {
+    console.log('buttonNext clicked');
+    progressSteps.setAttribute('currentstep', parseInt(progressSteps.getAttribute('currentstep')) + 1);
+  });
+
+  let buttonGo0 = document.querySelector('button#branch-0');
+  let buttonGo1 = document.querySelector('button#branch-1');
+  buttonGo0.addEventListener('click', () => {
+    console.log('buttonGo0 clicked, go branch 0');
+    progressSteps.setAttribute('branch', 0);
+    progressSteps.setAttribute('currentstep', parseInt(progressSteps.getAttribute('currentstep')) + 1);
+  });
+  buttonGo1.addEventListener('click', () => {
+    console.log('buttonGo1, go branch 1');
+    progressSteps.setAttribute('branch', 1);
+    progressSteps.setAttribute('currentstep', parseInt(progressSteps.getAttribute('currentstep')) + 1);
+  });
+
+  document.querySelector('body').addEventListener('fork', () => {
+    console.log('received fork event');
+    buttonNext.style.display = 'none';
+    buttonGo0.style.display = 'flex';
+    buttonGo1.style.display = 'flex';
+  });
+
+  document.querySelector('body').addEventListener('unfork', () => {
+    buttonNext.style.display = 'flex';
+    buttonGo0.style.display = 'none';
+    buttonGo1.style.display = 'none';
+  });
+
+  document.querySelector('body'), addEventListener('end', () => {
+    console.log('ALL DONE FROM BODY');
+  });
+  
+  </script>
+</body>
+</html>
