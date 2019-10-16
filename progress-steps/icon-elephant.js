@@ -13,7 +13,7 @@ class IconElephant extends HTMLElement {
     :host {
       display: inline-block;
       --elephant-stroke-primary: #333;
-      --elephant-fill-primary: #fd6100;
+      --elephant-fill-primary: #948c87;
       --elephant-fill-secondary: #f9b87b;
     }
 
@@ -45,7 +45,7 @@ class IconElephant extends HTMLElement {
     }
     
     </style>
-    <svg viewBox="-10 -10 120 120">
+    <svg viewBox="-15 -15 125 125">
     <g id="elephant">
       <g id="elephant-body">
         <circle cx="50" cy="60" r="30" />

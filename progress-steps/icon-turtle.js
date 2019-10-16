@@ -43,7 +43,7 @@ class IconTurtle extends HTMLElement {
       fill: var(--fill-scales);
     }
     </style>
-    <svg viewBox="-10 -10 120 120">
+    <svg viewBox="-20 -15 135 130">
     <defs>
       <mask id="mask-shell">
         <path d="M38 61 a 1,1 0 0 1 55 0" fill="white" />

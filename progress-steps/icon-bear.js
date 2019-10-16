@@ -52,7 +52,7 @@ class IconBear extends HTMLElement {
       fill: var(--bear-stroke-primary);
     }
     </style>
-    <svg viewBox="-15 -15 130 130">
+    <svg viewBox="-20 -15 130 130">
 
      <g id="bear">
 

@@ -47,7 +47,7 @@ class IconPenguin extends HTMLElement {
     }
 
     </style>
-    <svg viewBox="-10 -10 120 120">
+    <svg viewBox="-15 -10 120 120">
       <g id="penguin">
         <g id="penguin-feet">
           <path d="M32 84 l -5 12 l 15 -10 z" />

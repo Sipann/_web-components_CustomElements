@@ -104,7 +104,7 @@ class IconWhale extends HTMLElement {
       fill: var(--fill-secondary);
     }
     </style>
-    <svg viewBox="-10 -10 120 120">
+    <svg viewBox="-15 -15 120 120">
       <g id="whale" stroke="#333" stroke-width="2">
         <g id="whale-body">
           <path d="M5 50 a 1,1 0 0 1 60 -5 q 3 10 8 -10 q -12 -7 -7 -17 q 8 -3 12 7  q 5 -7 12 -7  q 4 14 -7 17 q -5 30 -32 40 a 1.5,1 0 0 1 -10 2 q -16 5 -30 -7 q 0 -2 3 -2 l -5 -9  q -3 1 -3 -2 q 0 0 -1 -6" />

@@ -13,7 +13,7 @@ class IconRabbit extends HTMLElement {
     :host {
       display: inline-block;
       --rabbit-stroke-primary: #333;
-      --rabbit-fill-primary: yellow;
+      --rabbit-fill-primary: #f75869;
       --rabbit-fill-secondary: pink;
     }
 
@@ -41,7 +41,7 @@ class IconRabbit extends HTMLElement {
     }
     
     </style>
-    <svg viewBox="-10 -10 120 120">
+    <svg viewBox="-20 -20 140 140">
     <g id="rabbit">
       <g id="rabbit-tail">
         <circle cx="7" cy="80" r="5" />

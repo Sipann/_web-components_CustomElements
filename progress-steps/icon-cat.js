@@ -13,7 +13,7 @@ class IconCat extends HTMLElement {
     :host {
       display: inline-block;
       --stroke-primary: #333;
-      --fill-primary: rgb(15, 238, 115);
+      --fill-primary: rgb(162, 133, 107);
     }
 
     svg {
@@ -35,7 +35,7 @@ class IconCat extends HTMLElement {
       fill: var(--stroke-primary);
     }
     </style>
-    <svg viewBox="-10 -10 120 120">
+    <svg viewBox="-10 -15 120 115">
       <g id="cat">
         <g id="cat-head">
           <path id="head" d="M30 19 c -10 25, 50 25, 40 0 q 3 -7.5 2 -15 l -10 5 q -14 -8 -28 0 l -10 -5 q 3 12 6 15"  />
