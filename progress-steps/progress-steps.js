@@ -11,9 +11,6 @@ const progressStepsHTML = `
   position: relative;
 }
 
-svg {
-  // border: 1px solid blue;
-}
 </style>
 <div id="container">
   <svg></svg>
@@ -33,13 +30,14 @@ class ProgressSteps extends HTMLElement {
     // data
     this._blockDim = 0;
     this._branchesHooks = [];
-    this._branchesNumber = 1;  // ex this._branches
+    this._branchesNumber = 1;  
     this._circleDim = 0;
-    this._commonHook = 0; // ex this._commonBranchHook
-    this._commonLength = 1; // ex this._commonBranchLength
+    this._commonHook = 0; 
+    this._commonLength = 1; 
     this._componentHeight = 0;
     this._componentWidth = 0;
-    this._longestLength = 1; // ex this._longestBranchLength
+    this._currentStep = 0;
+    this._longestLength = 1; 
     this._pathDim = 0;
     this._ratio = 0.1;
     this._steps = [];
@@ -59,18 +57,14 @@ class ProgressSteps extends HTMLElement {
 
 
   attributeChangedCallback(name, oldValue, newValue) {
-    let currentStep = this._root.querySelector('one-step[current]');
+    this._currentStep = this._root.querySelector('one-step[current]');
     if (name === 'branch' && newValue != oldValue) {
       this._branch = newValue;
-      currentStep.setAttribute('branch', newValue);
+      this._currentStep.setAttribute('branch', newValue);
     }
 
     if (name === 'currentstep' && oldValue) {
-      currentStep.setAttribute('done', !!true);
-      let buttonsEvent = currentStep.getAttribute('position') == this._commonLength - 2 ?
-        new Event('fork', { bubbles: true, composed: true }) :
-        new Event('unfork', { bubbles: true, composed: true });
-      this.dispatchEvent(buttonsEvent);
+      this._currentStep.setAttribute('done', !!true);
     }
   }
 
@@ -151,7 +145,7 @@ class ProgressSteps extends HTMLElement {
         listItem.setAttribute('current', !!true);
       }
 
-      // 
+      
       let newG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
       newG.setAttribute('transform', `translate(0, ${index * this._blockDim })`);
       
@@ -191,18 +185,36 @@ class ProgressSteps extends HTMLElement {
   }
 
   _stepForwards() {
-    let currentStep, newStep, nextPosition;
-    currentStep = this._root.querySelector('one-step[current]');
-    currentStep.removeAttribute('current');
+    let newStep, nextPosition, disabled;
+    this._currentStep.removeAttribute('current');
 
-    nextPosition = parseInt(currentStep.getAttribute('position')) + 1;
+    nextPosition = parseInt(this._currentStep.getAttribute('position')) + 1;
     
+    if (this._branch) {
+      for (let i=0; i<this._branchesNumber; i++) {
+        if (i !== parseInt(this._branch)) {
+          disabled = this._root.querySelectorAll(`one-step.branch-${i}`);
+        }
+      }
+      disabled.forEach(step => {
+        step.setAttribute('disabled', !!true);
+      });
+    }
+
     newStep = this._branch ?
       this._root.querySelector(`one-step.branch-${this._branch}[position="${nextPosition}"]`) || null :
       this._root.querySelector(`one-step[position="${nextPosition}"]`) || null;
     
+
     if (newStep) {
       newStep.setAttribute('current', !!true);
+      let buttonsEvent = this._currentStep.getAttribute('position') == this._commonLength - 2 ?
+        new Event('fork', { bubbles: true, composed: true }) :
+        new Event('unfork', { bubbles: true, composed: true });
+      this.dispatchEvent(buttonsEvent);
+
+      const enabledEvent = new Event('enabled', { bubbles: true, composed: true });
+      this.dispatchEvent(enabledEvent);
     } else {
       let allDoneEvent = new Event('end', { bubbles: true, composed: true });
       this.dispatchEvent(allDoneEvent);

@@ -9,38 +9,36 @@ const oneStepHTML = `
 :host {
   display: inline-block;
   position: relative;
+  --current-color: rgba(0, 0, 255, 0.25);
+  --done-stroke-color: #f30458;
+  --done-fill-color: #dea9b4;
 }
-
-svg {
-  // border: 1px solid red;
-}
-
 
 path {
   stroke-width: 4px;
   fill: none;
 }
 
-:host([current]) path.frame {
-  fill: rgba(255, 255, 0, 0.5);
-}
-
 path.frame {
   stroke: #333;
-  z-index: -2;
 }
 
 path.animate {
-  stroke: blue;
-  transition: 2s;
+  stroke: var(--done-stroke-color);
 }
 
-path.animate.done {
-  fill: blue;
+:host([current]) path.frame {
+  fill: var(--current-color);
+}
+
+:host([disabled]) path.overlay {
+  stroke: #333;
+  fill: rgba(0, 0, 0, .5);
 }
 
 path.frame.done {
-  fill: red;
+  fill: var(--done-fill-color);
+  opacity: 0.5;
 }
 </style>
 <svg></svg>
@@ -99,7 +97,6 @@ class OneStep extends HTMLElement {
 
   _animate() {
     let path;
-    // let pathFrame = this._root.querySelector('path.frame');
     if (this._branch) {
       let paths = this._root.querySelectorAll('path.animate');
       path = paths[this._branch];
@@ -118,7 +115,7 @@ class OneStep extends HTMLElement {
       { strokeDasharray: `0 ${pathLength}` },
       { strokeDasharray: `${pathLength} 0`}
     ], {
-      duration: 1000,
+      duration: 1500,
       fill: 'forwards'
     });
     animation.onfinish = () => {
@@ -148,9 +145,9 @@ class OneStep extends HTMLElement {
     if (className === 'animate') {
       let pathLength = path.getTotalLength();
       path.style.strokeDasharray = `0 ${pathLength}`;
+      this._attachIcon();
     }
     this._svg.appendChild(path);
-    this._attachIcon();
   }
 
   _emitDoneEvent() {
@@ -161,11 +158,14 @@ class OneStep extends HTMLElement {
   _renderPaths() {
     let pathsFrame = [];
     let pathsAnim = [];
+    let basePath = `M ${this._hook + (this._circleDim / 2) + 2} ${this._circleDim + 2} a 1,1 0 0 1 0 ${-this._circleDim} a 1,1 0 0 1 0 ${this._circleDim}`;
+
     if (this.hasAttribute('last')) {
       let hooks = this.getAttribute('last').split(',');
 
       hooks.forEach(hook => {
-        pathsFrame.push(`M ${this._hook + (this._circleDim / 2) + 2} ${this._circleDim + 2} a 1,1 0 0 1 0 ${-this._circleDim} a 1,1 0 0 1 0 ${this._circleDim} v ${this._pathDim / 2} l ${hook - (this._hook)} 0 v ${this._pathDim / 2} v ${-this._pathDim / 2} l ${-(hook - (this._hook))} 0 v ${-this._pathDim / 2} `);
+        let endPathFrame = `v ${this._pathDim / 2} l ${hook - (this._hook)} 0 v ${this._pathDim / 2} v ${-this._pathDim / 2} l ${-(hook - (this._hook))} 0 v ${-this._pathDim / 2}`;
+        pathsFrame.push(basePath + endPathFrame);
       });
 
       pathsFrame.forEach((path, index) => {
@@ -173,7 +173,8 @@ class OneStep extends HTMLElement {
       });
 
       hooks.forEach(hook => {
-        pathsAnim.push(`M ${this._hook + (this._circleDim / 2) + 2} ${this._circleDim + 2} a 1,1 0 0 1 0 ${-this._circleDim} a 1,1 0 0 1 0 ${this._circleDim} v ${this._pathDim / 2} l ${hook - (this._hook)} 0 v ${this._pathDim / 2}`);
+        let endPathAnim = `v ${this._pathDim / 2} l ${hook - (this._hook)} 0 v ${this._pathDim / 2}`;
+        pathsAnim.push(basePath + endPathAnim);
       });
 
       pathsAnim.forEach((path, index) => {
@@ -181,13 +182,14 @@ class OneStep extends HTMLElement {
       });
       
     } else {
-      let basePath = `M ${this._hook + (this._circleDim / 2) + 2} ${this._circleDim + 2} a 1,1 0 0 1 0 ${-this._circleDim} a 1,1 0 0 1 0 ${this._circleDim}`;
       let endPath = this.hasAttribute('final') ? '' : `v ${this._pathDim}`;
       let path = basePath + endPath;
       this._createPath(path, 'frame');
       this._createPath(path, 'animate');
+      this._createPath(basePath, 'overlay');
     }
   }
+
 
 }
 
