@@ -123,6 +123,10 @@ class OneStep extends HTMLElement {
       this._emitDoneEvent();
     }
 
+    // send playing event before the animation finishes to launch button animation @ same time
+    const playingEvent = new Event('playing', { bubbles: true, composed: true });
+    this.dispatchEvent(playingEvent);
+
   }
 
   _attachIcon() {

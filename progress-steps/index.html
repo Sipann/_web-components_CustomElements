@@ -36,6 +36,9 @@
   }
 
   div#controls {
+    --easing: ease-in-out;
+    --duration-opacity: .6s;
+    --duration-transform: 1s;
     width: 250px;
     height: 150px;
     border: 4px solid #333;
@@ -44,8 +47,26 @@
     align-items: center;
   }
 
+  h3 {
+    display: none;
+    width: 80%;
+    text-align: center;
+  }
+
+  div#controls-container {
+    position: relative;
+    height: 90%;
+    width: 90%;
+    filter: url('#gooey');
+  }
+
+  svg {
+    width: 0;
+    height: 0;
+  }
+
   button {
-    width: 150px;
+    width: 100px;
     height: 50px;
     display: flex;
     justify-content: center;
@@ -61,16 +82,85 @@
     outline: 0;
   }
 
-  #branch-0,
-  #branch-1 {
-    display: none;
-    margin: 1rem;
+  #next,
+  #north,
+  #south {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0);
   }
 
-  h3 {
+  #next.forking,
+  #north,
+  #south {
     display: none;
-    width: 80%;
-    text-align: center;
+  }
+
+  button span {
+    display: inline-block;
+  }
+
+  #north span,
+  #south span {
+    opacity: 0;
+  }
+
+
+  #north.enter {
+    animation: button-north-enter var(--easing) var(--duration-transform) forwards;
+  }
+
+  #north.leave {
+    animation: button-north-leave var(--easing) var(--duration-transform) forwards;
+  }
+
+  #south.enter {
+    animation: button-south-enter var(--easing) var(--duration-transform) forwards;
+  }
+
+  #south.leave {
+    animation: button-south-leave var(--easing) var(--duration-transform) forwards;
+  }
+
+  #north.enter span,
+  #south.enter span {
+    animation: span-enter var(--easing) var(--duration-opacity) forwards var(--duration-transform);
+  }
+  
+  #north.leave span,
+  #south.leave span {
+    animation: span-leave var(--easing) var(--duration-opacity) forwards;
+  }
+  
+  @keyframes button-north-enter {
+    0% { transform: translate3d(-50%, -50%, 0); }
+    100% {  transform: translate3d(10%, -50%, 0); }
+  }
+
+  @keyframes button-north-leave {
+    0% {  transform: translate3d(10%, -50%, 0); }
+    100% { transform: translate3d(-50%, -50%, 0); }
+  }
+
+  @keyframes button-south-enter {
+    0% { transform: translate3d(-50%, -50%, 0); }
+    100% {  transform: translate3d(-110%, -50%, 0); }
+  }
+
+  @keyframes button-south-leave {
+    0% {  transform: translate3d(-110%, -50%, 0); }
+    100% { transform: translate3d(-50%, -50%, 0); }
+  }
+
+  @keyframes span-enter {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  @keyframes span-leave {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
   }
 
   </style>
@@ -81,12 +171,30 @@
   <progress-steps 
     currentstep=0 
     ratio=0.4></progress-steps>
-  <div id="controls">
-    <button id="next">Next</button>
-    <button id="branch-0">South</button>
-    <button id="branch-1">North</button>
+    <div id="controls">
+      <div id="controls-container">
+        <button id="next">
+          <span>Next</span>
+        </button>
+        <button id="south">
+          <span>South</span>
+        </button>
+        <button id="north">
+          <span>North</span>
+        </button>
+      </div>
     <h3>You have reached your destination !</h3>
   </div>
+
+  <svg>
+    <defs>
+      <filter id="gooey">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+        <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10" result="goo" />
+        <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+      </filter>
+    </defs>
+  </svg>
 <script>
   let progressSteps = document.querySelector('progress-steps');
   let steps = [
@@ -96,8 +204,15 @@
   ];
   progressSteps.steps = steps;
 
-
+  let body = document.querySelector('body');
   let buttons = document.querySelectorAll('button');
+  let buttonNext = document.querySelector('button#next');
+  let buttonNorth = document.querySelector('#north');
+  let buttonSouth = document.querySelector('#south');
+  let controlsContainer = document.querySelector('#controls-container');
+  let animDuration = parseInt(getComputedStyle(document.querySelector('#controls')).getPropertyValue('--duration-transform'));
+
+
   function disableButtons() {
     buttons.forEach(button => {
       button.setAttribute('disabled', true);
@@ -114,44 +229,48 @@
     disableButtons();
     progressSteps.setAttribute('currentstep', parseInt(progressSteps.getAttribute('currentstep')) + 1);
   }
-
-  let buttonNext = document.querySelector('button#next');
+  
   buttonNext.addEventListener('click', (e) => {
     disableButtons();
     increaseStep();
   });
-
-  let buttonGo0 = document.querySelector('button#branch-0');
-  let buttonGo1 = document.querySelector('button#branch-1');
-  buttonGo0.addEventListener('click', (e) => {
-    progressSteps.setAttribute('branch', 0);
-    increaseStep();
-  });
-  buttonGo1.addEventListener('click', (e) => {
+  
+  buttonNorth.addEventListener('click', (e) => {
     progressSteps.setAttribute('branch', 1);
     increaseStep();
   });
 
-  document.querySelector('body').addEventListener('fork', () => {
-    buttonNext.style.display = 'none';
-    buttonGo0.style.display = 'flex';
-    buttonGo1.style.display = 'flex';
+  buttonSouth.addEventListener('click', (e) => {
+    progressSteps.setAttribute('branch', 0);
+    increaseStep();
   });
 
-  document.querySelector('body').addEventListener('unfork', () => {
-    buttonNext.style.display = 'flex';
-    buttonGo0.style.display = 'none';
-    buttonGo1.style.display = 'none';
+  body.addEventListener('fork', () => {
+    buttonNext.className = 'forking';
+    buttonNorth.style.display = 'flex';
+    buttonSouth.style.display = 'flex';
+    buttonNorth.className = 'enter';
+    buttonSouth.className = 'enter';
   });
 
+  body.addEventListener('unfork', () => {
+    buttonNorth.className = 'leave';
+    buttonSouth.className = 'leave';
+    setTimeout(() => {
+      buttonNext.classList.remove('forking');
+      buttonNorth.style.display = 'none';
+      buttonSouth.style.display = 'none';
+    }, animDuration * 1000);
+  });
+
+  
   document.querySelector('body').addEventListener('end', () => {
-    buttonNext.style.display = 'none';
+    controlsContainer.parentElement.removeChild(controlsContainer);
     document.querySelector('h3').style.display = 'inline-block';
-
   });
 
   document.querySelector('body').addEventListener('enabled', () => {
-    enableButtons()
+    enableButtons();
   });
   
   </script>

@@ -50,6 +50,8 @@ class ProgressSteps extends HTMLElement {
 
     // set dimensions for svg container: component width / height + 4px on both dimensions to adjust for stroke-width.
     this._svgContainer.setAttribute('viewBox', `0 0 ${this._componentWidth + 4} ${this._componentHeight + 4}`);
+    //
+    this._svgContainer.addEventListener('playing', () => { this._emitButtonsEvent() });
 
     // get ratio attribute
     this._ratio = parseFloat(this.getAttribute('ratio')) || 1;
@@ -86,6 +88,19 @@ class ProgressSteps extends HTMLElement {
     return listItem;
   }
 
+  _emitButtonsEvent() {
+    let buttonsEvent;
+    let currentPosition = parseInt(this._currentStep.getAttribute('position'));
+    if (currentPosition === this._commonLength - 2) {
+      buttonsEvent = new Event('fork', { bubbles: true, composed: true });
+    } else if (currentPosition === this._commonLength - 1) {
+      buttonsEvent = new Event('unfork', { bubbles: true, composed: true })
+    }
+    if (buttonsEvent) {
+      this.dispatchEvent(buttonsEvent);
+    }
+  }
+
   _findLongest(arr) {
     let max = 0;
     let maxLength = arr[max].length;
@@ -115,7 +130,6 @@ class ProgressSteps extends HTMLElement {
         if (index === branch.length - 1) {
           listItem.setAttribute('final', !!true);
         }
-        
 
         let newG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         let translationY = (index + this._commonLength) * this._blockDim;
@@ -208,11 +222,6 @@ class ProgressSteps extends HTMLElement {
 
     if (newStep) {
       newStep.setAttribute('current', !!true);
-      let buttonsEvent = this._currentStep.getAttribute('position') == this._commonLength - 2 ?
-        new Event('fork', { bubbles: true, composed: true }) :
-        new Event('unfork', { bubbles: true, composed: true });
-      this.dispatchEvent(buttonsEvent);
-
       const enabledEvent = new Event('enabled', { bubbles: true, composed: true });
       this.dispatchEvent(enabledEvent);
     } else {
@@ -220,6 +229,8 @@ class ProgressSteps extends HTMLElement {
       this.dispatchEvent(allDoneEvent);
     }
   }
+
+  
 
   // Getters && Setters
 
