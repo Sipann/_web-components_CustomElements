@@ -59,17 +59,22 @@ width & height of card set on light DOM. Note: width & height of top and bottom 
 
 ## Example
 ```html
-<card-two-zones top=0.6>
-  <!-- if image used START -->
-  <img slot="front-top-slot" src="https://picsum.photos/200/300?grayscale" alt="a placeholder picture" />
-  <!-- if image used END -->
-  <h3 slot="front-bottom-title">Card Title</h3>
-  <p slot="front-bottom-subtitle">Card Subtitle</p>
-  <div slot="back-content" id="back-content">
-    <h2>Card Back</h2>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus cupiditate distinctio perferendis. Amet, porro modi vero atque sequi alias placeat, dolores molestias, quisquam reiciendis facilis est odit.</p>
-  </div>
-</card-two-zones>
+<!-- import JS file -->
+<script src="card-two-zones.js"></script>
+
+<body>
+  <card-two-zones top=0.6>
+    <!-- if image used START -->
+    <img slot="front-top-slot" src="https://picsum.photos/200/300?grayscale" alt="a placeholder picture" />
+    <!-- if image used END -->
+    <h3 slot="front-bottom-title">Card Title</h3>
+    <p slot="front-bottom-subtitle">Card Subtitle</p>
+    <div slot="back-content" id="back-content">
+      <h2>Card Back</h2>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus cupiditate distinctio perferendis. Amet, porro modi vero atque sequi alias placeat, dolores molestias, quisquam reiciendis facilis est odit.</p>
+    </div>
+  </card-two-zones>
+</body>
 ```
 
 
