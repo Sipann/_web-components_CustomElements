@@ -1,0 +1,26 @@
+{
+  "name": "_web-components_CustomElements",
+  "version": "1.0.0",
+  "description": "A collection of vanilla Web Component (no framework). Read.me files per component.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ./node_modules/karma/bin/karma start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sipann/_web-components_CustomElements.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sipann/_web-components_CustomElements/issues"
+  },
+  "homepage": "https://github.com/Sipann/_web-components_CustomElements#readme",
+  "devDependencies": {
+    "jasmine-core": "^3.5.0",
+    "karma": "^5.0.7",
+    "karma-chrome-launcher": "^3.1.0",
+    "karma-jasmine": "^3.1.1"
+  }
+}

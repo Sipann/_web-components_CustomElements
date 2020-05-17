@@ -173,7 +173,7 @@ section {
 </section>
 `;
 
-class CardTemplate extends HTMLElement {
+export class CardTemplate extends HTMLElement {
 
   constructor () {
     super()
@@ -204,4 +204,4 @@ class CardTemplate extends HTMLElement {
 
 }
 
-customElements.define('card-two-zones', CardTemplate)
+customElements.define('card-two-zones', CardTemplate);
