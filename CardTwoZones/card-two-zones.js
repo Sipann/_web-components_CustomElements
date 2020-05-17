@@ -12,13 +12,38 @@ templateCard.innerHTML = `
   font-family: var(--font-family, sans-serif);
 }
 
-section.card {
+section {
+  perspective: 1000px;
+}
+
+section .card {
   width: 100%;
   height: 100%;
   display: grid;
   grid-template-rows: var(--top-height) var(--bottom-height);
   border-radius: var(--rounded);
-  box-shadow: var(--shadow, 5px) var(--shadow, 5px) var(--shadow, 5px) var(--shadow-color, #bbb)
+  box-shadow: var(--shadow, 5px) var(--shadow, 5px) var(--shadow, 5px) var(--shadow-color, #bbb);
+
+  position: relative;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  transition: transform 1s;
+}
+
+.front,
+.back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  backface-visibility: hidden;
+}
+
+.back {
+  transform: rotateY(180deg);
+}
+
+.flipped .card {
+  transform: rotateY(180deg);
 }
 
 .top {
@@ -68,39 +93,46 @@ section.card {
 }
 
 </style>
-<section class="card">
-  <div class="top">
-    <slot id="top-slot" name="top"></slot>
-  </div>
-  <div class="bottom">
-    <div class="flip">
-      <slot name="icon">
-        <svg viewBox="0 0 100 100">
-          <path fill="none" stroke-width="5" d="M 30 50 A 20, 20 0 1 0 50 30" />
-          <path stroke-width="5" d="M 50 20 l -15 10 l 15 10 z" />
-        </svg>
-      </slot>
+
+<section>
+  <div class="card">
+    <div class="front">
+      <div class="top">
+        <slot id="top-slot" name="top"></slot>
+      </div>
+      <div class="bottom">
+        <div class="flip">
+          <slot name="icon">
+            <svg viewBox="0 0 100 100">
+              <path fill="none" stroke-width="5" d="M 30 50 A 20, 20 0 1 0 50 30" />
+              <path stroke-width="5" d="M 50 20 l -15 10 l 15 10 z" />
+            </svg>
+          </slot>
+        </div>
+        <slot id="content-title" name="title"></slot>
+        <slot id="content-summary" name="summary"></slot>
+      </div>
     </div>
-    <slot id="content-title" name="title"></slot>
-    <slot id="content-summary" name="summary"></slot>
+    <div class="back">BACK</div>
   </div>
 </section>
 `;
 
-
+// https://www.w3schools.com/howto/howto_css_flip_card.asp
 
 class CardTemplate extends HTMLElement {
 
-  constructor() {
+  constructor () {
     super()
     this._shadowRoot = this.attachShadow({ mode: 'open' })
     this._shadowRoot.appendChild(templateCard.content.cloneNode(true))
 
     this.$button = this.shadowRoot.querySelector('.flip')
-    
+    this.$container = this.shadowRoot.querySelector('section');
+
   }
 
-  connectedCallback() {
+  connectedCallback () {
     let rounded = this.hasAttribute('rounded') ? 5 : 0
     this.shadowRoot.host.style.setProperty('--rounded', `${rounded}%`)
 
@@ -113,8 +145,8 @@ class CardTemplate extends HTMLElement {
     let top;
     let bottom;
     let height = window.getComputedStyle(this).getPropertyValue('height')
-      let regex = /[a-z]/gi
-      height = height.replace(regex, '')
+    let regex = /[a-z]/gi
+    height = height.replace(regex, '')
     if (this.hasAttribute('top')) {
       top = this.getAttribute('top')
     } else {
@@ -123,13 +155,18 @@ class CardTemplate extends HTMLElement {
     bottom = height - top
     this.shadowRoot.host.style.setProperty('--top-height', `${top}px`)
     this.shadowRoot.host.style.setProperty('--bottom-height', `${bottom}px`)
+
+    this.addEventListener('flip', () => {
+      this.$container.classList.add('flipped');
+    });
   }
 
-  disconnectedCallback() {
+  disconnectedCallback () {
     this.$button.removeEventListener('click', this._flip)
+    this.removeEventListener('flip');
   }
 
-  _flip() {
+  _flip () {
     const flipEvent = new Event('flip')
     this.dispatchEvent(flipEvent)
   }
