@@ -1,5 +1,5 @@
 import { CardTemplate } from './card-two-zones.js';
-import { TestUtils } from "../test-utils.js";
+import { TestUtils } from '../test-utils.js';
 
 describe('CardTwoZones', () => {
 
