@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,34 +8,76 @@
   <title>Document</title>
   <script src="card-two-zones.js"></script>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  card-two-zones {
-    width: 210px;
-    height: 250px;
-  }
+    body {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-  card-two-zones img {
-    object-fit: cover;
-    max-width: 100%;
-  }
+    card-two-zones {
+      width: 210px;
+      height: 250px;
+      --bg-back: #eee;
+      --bg-front-bottom: #fdf2f2;
+      --bg-front-top: linear-gradient(126deg, rgba(231, 97, 155, 1) 0%, rgba(0, 42, 90, 1) 100%);
+      --btn-flip-bg: rgba(231, 97, 155, 1);
+      --flip-duration: 0.8s;
+      --flip-icon-fill: rgba(0, 42, 90, 1);
+      --font-family: arial;
+      --rounded: 15px;
+      --shadow-color: rgba(0, 0, 0, 0.5);
+    }
 
+    /* Style Slots */
+
+    card-two-zones h3 {
+      line-height: 2;
+    }
+
+    card-two-zones p {
+      font-size: .9rem;
+    }
+
+    card-two-zones #back-content {
+      background: linear-gradient(126deg, rgba(231, 97, 155, 0.2) 0%, rgba(0, 42, 90, 0.2) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 1rem;
+      height: 100%;
+      text-align: center;
+      border-radius: 15px;
+    }
   </style>
 </head>
+
 <body>
-  <card-two-zones flippable>
-    <!-- <svg viewBox="0 0 100 100" slot="top">
-      <circle cx="50" cy="50" r="35" fill="none" stroke="black" stroke-width="2" />
-    </svg> -->
-    <!-- <img slot="top" src="./logo.svg" alt="" /> -->
-    <img slot="top" src="./Phuket.jpg" alt="" />
-    <h3 slot="title">Card1</h3>
-    <p slot="summary">my summary</p>
+  <card-two-zones top=0.6>
+    <img slot="front-top-slot" src="https://picsum.photos/200/300?grayscale" alt="a placeholder picture" />
+    <h3 slot="front-bottom-title">Card Title</h3>
+    <p slot="front-bottom-subtitle">Card Subtitle</p>
+    <div slot="back-content" id="back-content">
+      <h2>Card Back</h2>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus cupiditate distinctio perferendis. Amet, porro modi vero atque sequi alias placeat, dolores molestias, quisquam reiciendis facilis est odit.</p>
+    </div>
+  </card-two-zones>
+
+  <card-two-zones top=0.6>
+    <h3 slot="front-bottom-title">Card Title</h3>
+    <p slot="front-bottom-subtitle">Card Subtitle</p>
+    <div slot="back-content" id="back-content">
+      <h2>Card Back</h2>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus cupiditate distinctio perferendis. Amet, porro modi vero atque sequi alias placeat, dolores molestias, quisquam reiciendis facilis est odit.</p>
+    </div>
   </card-two-zones>
 </body>
+
 </html>
