@@ -173,7 +173,7 @@ section {
 </section>
 `;
 
-export class CardTemplate extends HTMLElement {
+class CardTemplate extends HTMLElement {
 
   constructor () {
     super()
