@@ -1,3 +1,5 @@
+import './hour-glass.js';
+
 describe('HourGlass', () => {
 
   let element, shadowRoot;
@@ -21,7 +23,7 @@ describe('HourGlass', () => {
     it('should add a div with the class "hour-glass-container" under the shadow root', () => {
       document.body.append(element);
       expect(shadowRoot.querySelector('.hour-glass-container')).toBeTruthy();
-    }); 
+    });
 
     it('should accept attributes passed through DOM', () => {
       document.body.append(element);
@@ -73,15 +75,15 @@ describe('HourGlass', () => {
 
     it('should render proportionally when timeleft is intermediate', () => {
       let time = 0.4;
-      element.setAttribute('timeleft', time); 
-      
+      element.setAttribute('timeleft', time);
+
       document.body.append(element);
-      
+
       const container = shadowRoot.querySelector('.hour-glass-container');
       const styleBg = `linear-gradient(${bgColor} 0px, ${bgColor} 27%, ${sandColor} 27%, ${sandColor} 50%, ${bgColor} 50%, ${bgColor} 73%, ${sandColor} 73%, ${sandColor} 100%)`;
       expect(container.style.background).toBe(styleBg);
     });
-    
+
 
     it('should not display drop line when timeleft is over (ie === 1)', () => {
       element.setAttribute('timeleft', 0);
@@ -89,7 +91,7 @@ describe('HourGlass', () => {
       const drop = shadowRoot.querySelector('.hour-glass-container span');
       const noDisplay = 'none';
       expect(drop.style.display).toBe(noDisplay);
-    }); 
+    });
 
     it('should not display drop line when timeleft is === 1', () => {
       element.setAttribute('timeleft', 1);
@@ -98,7 +100,7 @@ describe('HourGlass', () => {
       const noDisplay = 'none';
       expect(drop.style.display).toBe(noDisplay);
     });
-    
+
   });
 
   afterEach(() => {
