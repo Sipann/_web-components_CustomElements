@@ -1,4 +1,4 @@
-# pie-chart
+# Custom Element \<pie-chart>
 
 A Pie Chart component connecting labels with corresponding sectors.
 
@@ -14,9 +14,50 @@ Clicking a sector displays a tooltip with value provided as well as computed per
 
 ___
 
+
+![Pie Chart - Animation ended](./readme_img/screenshot.png)
+
+
+## Attributes
+
+**animation**: set animation type.
+* type: String
+* Possible values:
+  * **seq**: each sector will be painted in **seq**uence (drawing a circle from start to finish);
+  * **all**: all sectors paintings will start and finish at the same time (the bigger the longer).
+* Default: none
+
+**anim-duration**: animation total duration in ms
+* type: Number
+* Default: 0
+
+**donut-radius**: set width of inner circle
+* type: Number
+* Range: [0, 25]
+  * 0: no donut shape
+  * 25: equivalent to 100% - will mask the piechart.
+* Default: 0
+
+**labels**: set position of labels (legend) relative to the pie chart.
+* type: String
+* Possible values:
+  * 'top'
+  * 'bottom'
+  * 'right'
+  * 'left'
+* Default: no labels displayed
+
+**tags**: Flag setting tags on pie charts.
+* type: Boolean
+* Default: false
+
+
+
+
+
+
 ## Usage
 
-html
 ```html
 <pie-chart></pie-chart>
 ```
@@ -31,12 +72,12 @@ To add values and matching colors programmatically, use the setters (see API bel
 type: [String]
 
 ```js
-let pieChart = document.querySelector('pie-chart');
-let pieColors = [
-  'rgb(161,239,197)', 
-  'rgb(79,249,159)', 
-  'rgb(191,243,215)', 
-  'rgb(130,247,185)', 
+const pieChart = document.querySelector('pie-chart');
+const pieColors = [
+  'rgb(161,239,197)',
+  'rgb(79,249,159)',
+  'rgb(191,243,215)',
+  'rgb(130,247,185)',
   'rgb(24,247,128)'
 ];
 pieChart.pieColors = pieColors;
@@ -49,8 +90,8 @@ type: [objects]
 Must be an array of key-value pairs as illustrated below .
 
 ```js
-let pieChart = document.querySelector('pie-chart');
-let values = [
+const pieChart = document.querySelector('pie-chart');
+const values = [
   { 'working' : 75 },
   { 'reading' : 20 },
   { 'cooking' : 10 },
@@ -71,38 +112,7 @@ pieChart.values = values;
 ```
 
 
-## Attributes
 
-**animation**: set animation type.
-* type: String
-* Possible values:
-  * **seq**: each sector will be painted in **seq**uence (drawing a circle from start to finish);
-  * **all**: all sectors paintings will start and finish at the same time (the bigger the longer).
-* Default: none
-
-**anim-duration**: animation total duration in ms
-* type: Number
-* Default: 0
-
-**donut-radius**: set width of inner circle 
-* type: Number
-* Range: [0, 25] 
-  * 0: no donut shape
-  * 25: equivalent to 100% - will mask the piechart.
-* Default: 0
-
-**labels**: set position of labels (legend) relative to the pie chart.
-* type: String
-* Possible values:
-  * 'top'
-  * 'bottom'
-  * 'right'
-  * 'left'
-* Default: no labels displayed
-
-**tags**: Flag setting tags on pie charts.
-* type: Boolean
-* Default: false
 
 ```html
 <!--
@@ -128,9 +138,10 @@ pie-chart disk shaped - not animated- showing tags - displaying labels at the ri
 ```
 
 
-## CSS
+## Component Styling CSS
 
 ```css
+/* from light DOM */
 pie-chart {
   width: 400px;
   position: relative;
@@ -171,8 +182,8 @@ Component **style** can be customized from parent.
 * Legend labels margin-right
 * default: 0
 
-**--svg-bg** 
-* svg background color 
+**--svg-bg**
+* svg background color
 * default: '#fff'
 
 **--text-color**
@@ -204,6 +215,7 @@ Component **style** can be customized from parent.
 * default: 120px
 
 ```css
+/* from light DOM*/
 pie-chart {
   /* ... */
   --border-label: 2px dashed red;
