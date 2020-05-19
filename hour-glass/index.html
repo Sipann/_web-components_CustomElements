@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,29 +18,36 @@
       width: 150px;
       height: 150px;
     }
-
   </style>
   <title>Document</title>
 </head>
+
 <body>
+  <!-- no attributes -->
   <hour-glass></hour-glass>
-  <hour-glass timeleft=".4" bgColor="green" sandColor="red"></hour-glass>
+
+  <!-- with attributes -->
+  <hour-glass
+    timeleft=".4"
+    bgColor="#f64c72"
+    sandColor="#99738e"></hour-glass>
 </body>
 
 <script>
-  let hourGlass = document.querySelector('hour-glass');
-  let startTime = Date.now();
-  let endTime = startTime + 10000;
-  let totalTime = endTime - startTime;
+  const hourGlass = document.querySelector('hour-glass');
+  const startTime = Date.now();
+  const endTime = startTime + 10000;
+  const totalTime = endTime - startTime;
   const interval = setInterval(() => {
-    let remaining = (endTime - Date.now()) / totalTime;
+    const remaining = (endTime - Date.now()) / totalTime;
     if (remaining > 0) {
       hourGlass.setAttribute('timeleft', remaining);
     } else {
       hourGlass.setAttribute('timeleft', 0);
-      clearInterval(interval); 
+      clearInterval(interval);
     }
   }, 1000);
 
-// </script>
+</script>
+
 </html>
