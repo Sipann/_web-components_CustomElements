@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,36 +25,38 @@
     pie-chart {
       width: 400px;
       position: relative;
-   }
+    }
   </style>
 </head>
+
 <body>
 
   <div id="app">
     <pie-chart
-    animation="seq"
-    labels="top"
-    anim-duration=2000
-    tags
-    donut-radius=15></pie-chart>
+      animation="seq"
+      labels="top"
+      anim-duration=2000
+      tags
+      donut-radius=15></pie-chart>
   </div>
-  
-  
-  <script>
-  let pieChart = document.querySelector('pie-chart');
-  let values = [
-    { 'working' : 75 },
-    { 'reading' : 20 },
-    { 'cooking' : 10 },
-    { 'writing' : 10 },
-    { 'walking' : 10 },
-    { 'socializing' : 15 },
-  ];
-  let pieColors = ['rgb(161,239,197)', 'rgb(79,249,159)', 'rgb(191,243,215)', 'rgb(130,247,185)', 'rgb(24,247,128)'];
 
-  pieChart.pieColors = pieColors;
-  pieChart.values = values;
+
+  <script>
+    const pieChart = document.querySelector('pie-chart');
+    const values = [
+      { 'working': 75 },
+      { 'reading': 20 },
+      { 'cooking': 10 },
+      { 'writing': 10 },
+      { 'walking': 10 },
+      { 'socializing': 15 },
+    ];
+    const pieColors = ['rgb(161,239,197)', 'rgb(79,249,159)', 'rgb(191,243,215)', 'rgb(130,247,185)', 'rgb(24,247,128)'];
+
+    pieChart.pieColors = pieColors;
+    pieChart.values = values;
 
   </script>
 </body>
+
 </html>
